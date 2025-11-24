@@ -23,7 +23,7 @@ if not _G.Config_ or not _G.Config_.Webhooks then
     return
 end
 
-local IonixGameFunctions = loadstring(game:HttpGet("https://desyncwashere.net/scripts/GameFunctions"))()
+local IonixGameFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameFunctions.lua"))()
 
 local webhookURL = _G.Config_.Webhooks.Pet or _G.Config_.Webhooks.Join
 if not webhookURL or webhookURL == "" then
