@@ -1,5 +1,5 @@
 local GameData = {
-    OGCFrame = Vector3.new(70.1284332, 9.03796101, 24.6040936),
+    OGCFrame = Vector3.new(68.521904, 8.59998798, 26.2358398),
     OverworldEggAreaCFrame = {[1] = Vector3.new(-0.5828266143798828, 9.559693336486816, -21.460693359375), [2] = Vector3.new(-82.8704605, 9.19629288, -27.1242962)},
 
     Perm = {
@@ -50,7 +50,7 @@ local GameData = {
         ["Icy Egg"] = Vector3.new(-55.192982, 9.155189, -0.402438),
         ["Vine Egg"] = Vector3.new(-66.886223, 10.135189, 10.190548),
         ["Lava Egg"] = Vector3.new(-75.896500, 10.265189, 18.828331),
-        ["Secret Egg"] = nil,
+        ["Secret Egg"] = Vector3.new(-19437.0762, 8.45155239, 18837.0801),
         ["Atlantis Egg"] = Vector3.new(-83.027412, 10.795189, 20.237711),
         ["Classic Egg"] = Vector3.new(-86.627144, 10.455189, 25.488277),
     },
@@ -64,7 +64,9 @@ local GameData = {
 
     ActiveEvent = "OG",
 
-    AreaToTeleport = {},
+    AreaToTeleport = {
+        ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn"
+    },
 
     ValidShops = {
         "alien-shop",
@@ -118,6 +120,7 @@ local GameData = {
         "Stellaris Egg",
         "Season 8 Egg",
         "Spooky Egg",
+        "Season 9 Egg",
         "Season OG Egg",
     },
     PowerupEggs = {
@@ -136,7 +139,7 @@ local GameData = {
         ["Season 8 Egg"] = true,
         ["Spooky Egg"] = true,
         ["Season 9 Egg"] = true,
-        ["Season OG Egg"] = true,
+        ["Season OG Egg"] = true
     },
 }
 
