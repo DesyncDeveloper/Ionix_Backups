@@ -60,7 +60,11 @@ local GameData = {
         OG = {
             "OG Egg",
             "Super OG Egg",
-        }
+        },
+
+        ThanksGiving = {
+            "Corn Egg",
+        },
     },
 
     ActiveEvent = { "OG", "ThanksGiving" },
@@ -80,6 +84,7 @@ local GameData = {
 
     AllEggs = {
         "Infinity Egg",
+        "Corn Egg",
         "OG Egg",
         "Super OG Egg",
         "Food Egg",
@@ -144,30 +149,42 @@ local GameData = {
 
 GameData.GetEggPlacement = function(eggName)
     if not eggName or type(eggName) ~= "string" then
-        warn("[Ionix DEBUG] ❌ Invalid egg name provided to GetEggPlacement.")
+        warn("[Ionix DEBUG] ❌ Invalid egg name provided to GetEggPlacement:", eggName)
         return nil
     end
 
     local stored = GameData.EggPlacement[eggName]
-    if stored and typeof(stored) == "Vector3" then
-        return stored
+    if stored then
+        if typeof(stored) == "Vector3" then
+            return stored
+        else
+            warn("[Ionix DEBUG] ⚠️ EggPlacement value for", eggName, "is not a Vector3.")
+        end
     end
 
     local primary, model = GameData.GetEggInstance(eggName)
     if primary and primary:IsA("BasePart") then
         return primary.Position
+    elseif model then
+        warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
     end
 
     local category = GameData.GetEggCategory(eggName)
-    if category == "OG" and GameData.OGCFrame then
-        return GameData.OGCFrame
-    elseif category == "ThanksGiving" and GameData.ThanksGivingCFrame then
-        return GameData.ThanksGivingCFrame
+    if category then
+        local placement = GameData.GetEventCFrame(category)
+        if placement then
+            return placement
+        else
+            warn("[Ionix DEBUG] ⚠️ Event category found ('" .. category .. "') but no CFrame stored for that event.")
+        end
+    else
+        warn("[Ionix DEBUG] ⚠️ Egg does not belong to Perm or any active event:", eggName)
     end
 
-    warn("[Ionix DEBUG] ⚠️ No placement found for egg:", eggName)
+    warn("[Ionix DEBUG] ❌ No placement found for egg:", eggName)
     return nil
 end
+
 
 GameData.GetEggInstance = function(eggName)
     for _, obj in ipairs(workspace.Rendered:GetDescendants()) do
@@ -180,6 +197,21 @@ GameData.GetEggInstance = function(eggName)
             end
         end
     end
+end
+
+GameData.GetEventCFrame = function(eventName)
+    if not eventName or type(eventName) ~= "string" then
+        return nil
+    end
+
+    local key = eventName .. "CFrame"
+
+    local value = GameData[key]
+    if value and typeof(value) == "Vector3" then
+        return value
+    end
+
+    return nil
 end
 
 GameData.GetEggCategory = function(selectedEgg)
