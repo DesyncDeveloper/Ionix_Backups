@@ -195,7 +195,7 @@ local function waitForLocalData(LocalData, webhookInstance2)
     print("Awaiting game data to load...")
 
     repeat
-        task.wait(1)
+        task.wait(0.25)
         if LocalData:IsReady() then
             print("✅ LocalData loaded successfully.")
             return true
