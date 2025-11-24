@@ -157,9 +157,9 @@ if _G.STATE_ == nil then
     _G.STATE_ = STATE
 end
 
-local GameData = loadstring(game:HttpGet("https://desyncwashere.net/scripts/GameData"))()
-local IonixGameFunctions = loadstring(game:HttpGet("https://desyncwashere.net/scripts/GameFunctions"))()
-local PetHatchWebhook = loadstring(game:HttpGet("https://desyncwashere.net/scripts/pethatch"))()
+local GameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
+local IonixGameFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameFunctions.lua"))()
+local PetHatchWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/pethatch.lua"))()
 
 local webhookInstance = Webhook.new(_G.Config_.Webhooks.Join, {})
 
