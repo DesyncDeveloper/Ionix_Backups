@@ -159,7 +159,7 @@ end
 
 local GameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
 local IonixGameFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/IonixGameFunctions.lua"))()
-local PetHatchWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/pethatch.lua"))()
+local PetHatchWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/PetHatch.lua"))()
 
 local webhookInstance = Webhook.new(_G.Config_.Webhooks.Join, {})
 
