@@ -161,6 +161,7 @@ local GameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/Desy
 local IonixGameFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/IonixGameFunctions.lua"))()
 local PetHatchWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/PetHatch.lua"))()
 
+
 local webhookInstance = Webhook.new(_G.Config_.Webhooks.Join, {})
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -367,10 +368,16 @@ local function getClosestSpecialEgg()
 
     if closestEgg and closestDistance <= _G.Config_.EggDistanceThreshold then
         _G.Config_.SelectedEgg = closestEgg.Name
-        warn("[ClosestSpecialEgg] SelectedEgg set to:", closestEgg.Name)
+
+        if _G.Config_.Debug then
+            warn("[ClosestSpecialEgg] SelectedEgg set to:", closestEgg.Name)
+        end
+
         return closestEgg, closestDistance
     else
-        warn("[ClosestSpecialEgg] No egg found within threshold")
+        if _G.Config_.Debug then
+            warn("[ClosestSpecialEgg] No egg found within threshold")
+        end
         return nil, closestDistance
     end
 end
@@ -802,7 +809,10 @@ task.spawn(function()
 				and _G.STATE_.mode == "IDLE"
 			then
 				defaultEgg = current
-				warn("[EggSwap] Default updated to:", defaultEgg)
+
+                if _G.Config_.Debug then
+                    warn("[EggSwap] Default updated to:", defaultEgg)
+                end
 			end
 
 			lastSelected = current
@@ -824,17 +834,24 @@ task.spawn(function()
         then
             if _G.Config_.SelectedEgg ~= defaultEgg then
                 _G.Config_.SelectedEgg = defaultEgg
-                warn("[EggSwap] Started swapping from default:", defaultEgg)
+
+                if _G.Config_.Debug then
+                    warn("[EggSwap] Started swapping from default:", defaultEgg)
+                end
             end
 
             if _G.Config_.EggList and #_G.Config_.EggList > 0 then
                 _G.Config_.SelectedEgg = _G.Config_.EggList[index]
-                warn("[EggSwap] Swapped eggs ->", _G.Config_.SelectedEgg)
+                if _G.Config_.Debug then
+                    warn("[EggSwap] Swapped eggs ->", _G.Config_.SelectedEgg)
+                end
                 index += 1
                 if index > #_G.Config_.EggList then index = 1 end
             else
                 _G.Config_.SelectedEgg = defaultEgg
-                warn("[EggSwap] No EggList; reverted to default:", defaultEgg)
+                if _G.Config_.Debug then
+                    warn("[EggSwap] No EggList; reverted to default:", defaultEgg)
+                end
             end
 
             task.wait(_G.Config_.EggChangeTime)
@@ -861,7 +878,9 @@ task.spawn(function()
             if SpecialEgg and EggPlatform and Humanoid and Root then
                 if _G.STATE_.mode ~= "SPECIAL" then
                     saveAndQuiesceSystems("SPECIAL")
-                    warn("[Ionix] 🎯 Entered SPECIAL mode")
+                    if _G.Config_.Debug then
+                        warn("[Ionix] 🎯 Entered SPECIAL mode")
+                    end
                     task.wait(0.35)
                 end
 
@@ -902,13 +921,17 @@ task.spawn(function()
                         _G.Config_.AtSpecialEgg = (newDist <= radius)
 
                         if not _G.Config_.AtSpecialEgg then
-                            warn(("[Ionix] ⚠️ After teleport, still outside platform radius (%.1f studs)."):format(newDist))
+                            if _G.Config_.Debug then
+                                warn(("[Ionix] ⚠️ After teleport, still outside platform radius (%.1f studs)."):format(newDist))
+                            end
                         end
                     else
                         _G.Config_.AtSpecialEgg = true
                     end
                 else
-                    warn("[Ionix] ⚠️ EggPlatform missing, restoring systems.")
+                    if _G.Config_.Debug then
+                        warn("[Ionix] ⚠️ EggPlatform missing, restoring systems.")
+                    end
                     _G.Config_.AtSpecialEgg = false
                     restoreAll("EggPlatform missing, restoring systems.")
                 end
@@ -918,11 +941,15 @@ task.spawn(function()
 
                     if success then
                         if not closestEgg then
-                            warn("[Ionix] ❌ No nearby egg found — restoring to default egg.")
+                            if _G.Config_.Debug then
+                                warn("[Ionix] ❌ No nearby egg found — restoring to default egg.")
+                            end
                             _G.Config_.AtSpecialEgg = false
                             restoreAll("No nearby special egg found — restoring to default egg.")
                         else
-                            warn(string.format("[Ionix] 🥚 Tracking closest egg '%s' (%.1f studs)", closestEgg.Name, dist))
+                            if _G.Config_.Debug then
+                                warn(string.format("[Ionix] 🥚 Tracking closest egg '%s' (%.1f studs)", closestEgg.Name, dist))
+                            end
                         end
                     else
                         warn("[Ionix] ⚠️ getClosestSpecialEgg() errored during call.")
@@ -931,7 +958,11 @@ task.spawn(function()
 
             else
                 if _G.STATE_.mode == "SPECIAL" or _G.STATE_.savedEgg then
-                    warn("[Ionix] 🌀 Special Egg ended or vanished — restoring defaults.")
+
+                    if _G.Config_.Debug then
+                        warn("[Ionix] 🌀 Special Egg ended or vanished — restoring defaults.")
+                    end
+
                     _G.Config_.AtSpecialEgg = false
                     restoreAll("🌀 Special Egg ended or vanished — restoring defaults.")
                 else
@@ -942,7 +973,9 @@ task.spawn(function()
             task.wait(0.2)
         else
             if _G.STATE_.mode == "SPECIAL" and not workspace:FindFirstChild("SummonedEgg") then
-                warn("[Ionix] 🧹 Cleanup fallback — restoring (egg gone, still in SPECIAL).")
+                if _G.Config_.Debug then
+                    warn("[Ionix] 🧹 Cleanup fallback — restoring (egg gone, still in SPECIAL).")
+                end
                 restoreAll("🧹 Cleanup fallback — restoring (egg gone, still in SPECIAL).")
             end
 
@@ -993,7 +1026,9 @@ task.spawn(function()
 
                     if dist > 50 and (time() - lastRiftTP) > RIFT_TP_COOLDOWN then
                         lastRiftTP = time()
-                        warn("⭐ FORCE TELEPORTING TO RIFT (valid but not near)")
+                        if _G.Config_.Debug then
+                            warn("⭐ FORCE TELEPORTING TO RIFT (valid but not near)")
+                        end
                         
                         local world = _G.STATE_.engagedRift:GetAttribute("World")
                         if world then teleportWorld(world) end
@@ -1015,6 +1050,9 @@ task.spawn(function()
 							local ok = riftIsStillValid(r, resolvedTarget, requiredMultiplier)
 							if ok then
 								warn("⭐ Forcing teleport (VALID rift found):", r.Name)
+                                if _G.Config_.Debug then
+                                    warn("⭐ Forcing teleport (VALID rift found):", r.Name)
+                                end
 								match = r
 								luck = getRiftLuck(r) or 0
 								break
@@ -1063,7 +1101,9 @@ end)
 task.spawn(function()
     while true do
         if _G.STATE_.mode == "SPECIAL" and not workspace:FindFirstChild("SummonedEgg") then
-            warn("[Ionix Watchdog] 🧭 Forcing restore due to missing egg.")
+            if _G.Config_.Debug then
+                warn("[Ionix Watchdog] 🧭 Forcing restore due to missing egg.")
+            end
             restoreAll("[Ionix Watchdog] 🧭 Forcing restore due to missing egg.")
         end
         task.wait(60)
@@ -1088,11 +1128,15 @@ task.spawn(function()
                         local dist = (Root.Position - targetPos).Magnitude
 
                         if dist > 15 then
-                            warn("[Ionix WATCHDOG] ⚠️ Distance too high ("..math.floor(dist).."). Forcing teleport.")
+                            if _G.Config_.Debug then
+                                warn("[Ionix WATCHDOG] ⚠️ Distance too high ("..math.floor(dist).."). Forcing teleport.")
+                            end
                             autoTeleportToEgg("Watchdog Teleport")
                         end
                     else
-                        warn("[Ionix WATCHDOG] ❌ No placement returned for egg:", targetEggName)
+                        if _G.Config_.Debug then
+                            warn("[Ionix WATCHDOG] ❌ No placement returned for egg:", targetEggName)
+                        end
                     end
                 end
             end
