@@ -2,7 +2,7 @@ repeat
     task.wait(0.1)
 until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-local IonixGameData = loadstring(game:HttpGet("https://desyncwashere.net/scripts/GameData"))()
+local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
