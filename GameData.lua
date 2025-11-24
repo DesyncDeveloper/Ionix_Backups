@@ -1,5 +1,6 @@
 local GameData = {
     OGCFrame = Vector3.new(68.521904, 8.59998798, 26.2358398),
+    ThanksGivingCFrame = Vector3.new(197.734268, 9.59999943, 186.453949),
     OverworldEggAreaCFrame = {[1] = Vector3.new(-0.5828266143798828, 9.559693336486816, -21.460693359375), [2] = Vector3.new(-82.8704605, 9.19629288, -27.1242962)},
 
     Perm = {
@@ -62,7 +63,7 @@ local GameData = {
         }
     },
 
-    ActiveEvent = "OG",
+    ActiveEvent = { "OG", "ThanksGiving" },
 
     AreaToTeleport = {
         ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn"
@@ -121,7 +122,6 @@ local GameData = {
         "Season 8 Egg",
         "Spooky Egg",
         "Season 9 Egg",
-        "Season OG Egg",
     },
     PowerupEggs = {
         ["Season 1 Egg"] = true,
@@ -139,7 +139,6 @@ local GameData = {
         ["Season 8 Egg"] = true,
         ["Spooky Egg"] = true,
         ["Season 9 Egg"] = true,
-        ["Season OG Egg"] = true
     },
 }
 
@@ -162,6 +161,8 @@ GameData.GetEggPlacement = function(eggName)
     local category = GameData.GetEggCategory(eggName)
     if category == "OG" and GameData.OGCFrame then
         return GameData.OGCFrame
+    elseif category == "ThanksGiving" and GameData.ThanksGivingCFrame then
+        return GameData.ThanksGivingCFrame
     end
 
     warn("[Ionix DEBUG] ⚠️ No placement found for egg:", eggName)
@@ -188,11 +189,20 @@ GameData.GetEggCategory = function(selectedEgg)
         end
     end
 
-    local activeEvent = GameData.ActiveEvent
-    if activeEvent and GameData.Event[activeEvent] then
-        for _, egg in ipairs(GameData.Event[activeEvent]) do
-            if egg == selectedEgg then
-                return activeEvent
+    local active = GameData.ActiveEvent
+    if typeof(active) == "string" then
+        active = { active }
+    end
+
+    if typeof(active) == "table" then
+        for _, eventName in ipairs(active) do
+            local list = GameData.Event[eventName]
+            if list then
+                for _, egg in ipairs(list) do
+                    if egg == selectedEgg then
+                        return eventName
+                    end
+                end
             end
         end
     end
@@ -205,10 +215,19 @@ for _, egg in ipairs(GameData.Perm) do
     GameData.AreaToTeleport[egg] = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
 end
 
-local activeEvent = GameData.ActiveEvent
-if activeEvent and GameData.Event[activeEvent] then
-    for _, egg in ipairs(GameData.Event[activeEvent]) do
-        GameData.AreaToTeleport[egg] = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+local active = GameData.ActiveEvent
+if typeof(active) == "string" then
+    active = { active }
+end
+
+if typeof(active) == "table" then
+    for _, eventName in ipairs(active) do
+        local list = GameData.Event[eventName]
+        if list then
+            for _, egg in ipairs(list) do
+                GameData.AreaToTeleport[egg] = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+            end
+        end
     end
 end
 
