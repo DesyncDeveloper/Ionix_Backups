@@ -158,21 +158,27 @@ local function GetRiftsFromName(Name)
     end
 
     local key = Normalize(Name)
-
     local data = RiftLookup[key]
     if not data then
         return nil
     end
 
-    for _, model in ipairs(workspace:WaitForChild("Rendered"):WaitForChild("Rifts"):GetChildren()) do
+    local results = {}
+
+    local riftsFolder = workspace:WaitForChild("Rendered"):WaitForChild("Rifts")
+    for _, model in ipairs(riftsFolder:GetChildren()) do
         if model:IsA("Model") then
             if Normalize(model.Name) == key then
-                return model, data
+                table.insert(results, model)
             end
         end
     end
 
-    return nil
+    if #results == 0 then
+        return nil
+    end
+
+    return results, data
 end
 
 local IonixGameFunctions = {}
@@ -202,8 +208,22 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
 	end
 
     local EggCategory = GameData.GetEggCategory(eggName)
-    if EggCategory == "OG" then
-        placement = GameData.OGCFrame
+
+    if EggCategory then
+        placement = GameData.GetEventCFrame(EggCategory)
+
+        if not placement then
+            warn(string.format(
+                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
+                EggCategory,
+                eggName
+            ))
+        end
+    else
+        warn(string.format(
+            "[Ionix DEBUG] ⚠️ No egg category found for '%s'.",
+            eggName
+        ))
     end
 
 	local offset = Vector3.new(0, 6, 0)
@@ -279,9 +299,22 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 	end
 
     local EggCategory = GameData.GetEggCategory(eggName)
-    if EggCategory == "OG" then
-        placement = GameData.OGCFrame
+    local placement = nil
+
+    if EggCategory then
+        placement = GameData.GetEventCFrame(EggCategory)
+
+        if not placement then
+            warn(string.format(
+                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame defined.",
+                EggCategory, eggName
+            ))
+        end
+
+    else
+        warn("[Ionix DEBUG] ⚠️ No category returned for egg:", eggName)
     end
+
 
 	local offset = Vector3.new(0, 6, 0)
     Root.CFrame = CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
@@ -301,10 +334,47 @@ IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
         return
     end
 
-    local model, data = GetRiftsFromName(RiftName)
-    if not model or not data then
+    local models, data = GetRiftsFromName(RiftName)
+    if not models or not data then
         warn("[Ionix DEBUG] ❌ Rift not found:", RiftName)
         return
+    end
+
+    local model = nil
+    local highest = -math.huge
+
+    if data.Type == "Egg" and Multiplier then
+        for _, m in ipairs(models) do
+            local display = m:FindFirstChild("Display")
+            if display then
+                local gui = display:FindFirstChildWhichIsA("SurfaceGui", true)
+                local icon = gui and gui:FindFirstChild("Icon")
+                local luck = icon and icon:FindFirstChild("Luck")
+
+                if luck and luck:IsA("TextLabel") then
+                    local raw = tostring(luck.Text or "")
+                    local cleaned = raw:gsub("[^%d%.]", "")
+                    cleaned = cleaned:gsub("%.+", ".")
+                    local value = tonumber(cleaned) or 0
+
+                    if value >= Multiplier and value > highest then
+                        highest = value
+                        model = m
+                    end
+                end
+            end
+        end
+
+        if not model then
+            warn(string.format(
+                "[Ionix DEBUG] ❌ No Rift matched required multiplier ≥ %s",
+                tostring(Multiplier)
+            ))
+            return
+        end
+
+    else
+        model = models[1]
     end
 
     if data.Type ~= "Chest" and data.Type ~= "Egg" then
