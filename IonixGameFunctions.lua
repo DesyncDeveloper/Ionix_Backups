@@ -2,9 +2,11 @@ repeat
     task.wait(0.1)
 until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
+local IonixGameData = loadstring(game:HttpGet("https://getionix.xyz/scripts/GameData"))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -126,6 +128,60 @@ local function GetPetOdds(petName)
         oddsTable[variant] = { decimal = dec, odds = " 1 in " .. SimpleSuffix(1 / dec) }
     end
     return oddsTable
+end
+
+local function GetWorldHeightRange()
+    local worldName = WorldUtil:GetPlayerWorld(LocalPlayer)
+    local model = Workspace.Worlds:FindFirstChild(worldName)
+    if not model or worldName == "Seven Seas" then
+        return NumberRange.new(0, 0)
+    end
+
+    local spawn = model:FindFirstChild("Spawn")
+    local islands = model:FindFirstChild("Islands")
+    if not spawn or not islands then
+        return NumberRange.new(0, 0)
+    end
+
+    local minY = spawn.Position.Y - spawn.Size.Y / 2
+    local maxY = -1e999
+
+    for _, folder in ipairs(islands:GetChildren()) do
+        local island = folder:FindFirstChild("Island")
+        if island then
+            local pos = island:GetPivot().Position
+            minY = math.min(minY, pos.Y)
+            maxY = math.max(maxY, pos.Y)
+        end
+    end
+
+    return NumberRange.new(minY, maxY)
+end
+
+local function GetClampedHeight(y, range)
+    local a = 0
+    local h = 0
+
+    if y > range.Max then
+        a = 1
+        h = math.floor(y / 5) * 5
+    elseif y > range.Min then
+        local d = y - range.Min
+        a = d / (range.Max - range.Min)
+        h = math.floor(d / 5) * 5
+    end
+
+    return a, h
+end
+
+local function GetPlayerHeight()
+    local c = LocalPlayer.Character
+    local root = c and c:FindFirstChild("HumanoidRootPart")
+    if not root then return 0, 0 end
+
+    local range = GetWorldHeightRange()
+    local a, h = GetClampedHeight(root.Position.Y, range)
+    return h, a, range
 end
 
 local function Normalize(str)
@@ -540,6 +596,11 @@ IonixGameFunctions.BuildSecretEmbed = function(Name, Mythic, Shiny)
         footer = { text = os.date("getionix.xyz • Hatched on %d/%m/%Y at %H:%M:%S") },
     }
     return embed
+end
+
+IonixGameFunctions.GetHeight = function()
+    local h, alpha = GetPlayerHeight()
+    return h, alpha
 end
 
 return IonixGameFunctions
