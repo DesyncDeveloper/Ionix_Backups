@@ -266,41 +266,39 @@ IonixGameFunctions.SetForceStopAll = function(Boolean)
 end
 
 IonixGameFunctions.GetEggPlacement = function(eggName)
+
     local GameData = IonixGameData
-    if not GameData then
-        warn("[Ionix DEBUG] ❌ GameData not found.")
-        return
-    end
+	if not GameData then
+		warn("[Ionix DEBUG] ❌ GameData not found.")
+		return
+	end
 
-    -- Base placement
     local placement = GameData.GetEggPlacement(eggName)
-    if not placement then
-        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-        return
-    end
+	if not placement then
+		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+		return
+	end
 
-    -- Category override only for events
-    local category = GameData.GetEggCategory(eggName)
+    local EggCategory = GameData.GetEggCategory(eggName)
 
-    if category and category ~= "Perm" then
-        local eventPos = GameData.GetEventCFrame(category)
-        if eventPos then
-            placement = eventPos
-        else
+    if EggCategory then
+        placement = GameData.GetEventCFrame(EggCategory)
+
+        if not placement then
             warn(string.format(
                 "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
-                category, eggName
+                EggCategory,
+                eggName
             ))
         end
+    else
+        warn(string.format(
+            "[Ionix DEBUG] ⚠️ No egg category found for '%s'.",
+            eggName
+        ))
     end
 
-    -- FINAL SAFETY: placement MUST be a Vector3 or we FAIL SAFE instead of crashing
-    if typeof(placement) ~= "Vector3" then
-        warn("[Ionix DEBUG] ❌ Invalid placement (not Vector3) for:", eggName, placement)
-        return
-    end
-
-    local offset = Vector3.new(0, 6, 0)
+	local offset = Vector3.new(0, 6, 0)
     return CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
