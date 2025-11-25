@@ -4,6 +4,7 @@ until game:IsLoaded() and game:GetService("Players") and game:GetService("Player
 
 local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
 
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -184,6 +185,10 @@ local function GetPlayerHeight()
     return h, a, range
 end
 
+local function ExtractWorldFromArea(area)
+    return area:match("Workspace%.Worlds%.(.-)%.Areas")
+end
+
 local function Normalize(str)
     return string.lower(str):gsub("%s+", "-")
 end
@@ -337,27 +342,40 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 
 	task.wait(0.5)
 
-    if GameData.AreaToTeleport[eggName] ~= nil then
-        local area = GameData.AreaToTeleport[eggName]
-        print("Teleporting since its another world")
-	    RemoteEvent:FireServer("Teleport", area)
-        task.wait(2)
-    else
-        local area = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+    local areaToTeleport = GameData.AreaToTeleport[eggName]
 
-        local worldName = WorldUtil:GetPlayerWorld(LocalPlayer)
+    if areaToTeleport then
+        local targetWorld = ExtractWorldFromArea(areaToTeleport)
+        local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
 
-        if worldName == "The Overworld" then
-            local h, alpha = GetPlayerHeight()
+        if currentWorld ~= targetWorld then
+            print("Teleporting to correct world:", targetWorld)
+            RemoteEvent:FireServer("Teleport", areaToTeleport)
+            task.wait(2)
+        elseif currentWorld == "The Overworld" then
+            local h = GetPlayerHeight()
             if h ~= 0 then
-                print("Teleporting due to been above 0 meters")
-                RemoteEvent:FireServer("Teleport", area)
+                print("Teleporting (Overworld, but above ground)")
+                RemoteEvent:FireServer("Teleport", areaToTeleport)
                 task.wait(2)
             end
-        else
-            print("Teleporting due to been in wrong world")
-            RemoteEvent:FireServer("Teleport", area)
+        end
+
+    else
+        local overworldSpawn = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+        local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+
+        if currentWorld ~= "The Overworld" then
+            print("Teleporting (fallback wrong world)")
+            RemoteEvent:FireServer("Teleport", overworldSpawn)
             task.wait(2)
+        else
+            local h = GetPlayerHeight()
+            if h ~= 0 then
+                print("Teleporting (fallback overworld above ground)")
+                RemoteEvent:FireServer("Teleport", overworldSpawn)
+                task.wait(2)
+            end
         end
     end
 
@@ -389,7 +407,6 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
     else
         warn("[Ionix DEBUG] ⚠️ No category returned for egg:", eggName)
     end
-
 
 	local offset = Vector3.new(0, 6, 0)
     Root.CFrame = CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
