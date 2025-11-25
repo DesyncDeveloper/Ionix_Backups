@@ -2,7 +2,13 @@ repeat
     task.wait(0.1)
 until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
+if false == true then
+    loadstringUrl = "https://getionix.xyz/scripts/GameData"
+else
+    loadstringUrl = "https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"
+end
+
+local IonixGameData = loadstring(game:HttpGet(loadstringUrl))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -260,39 +266,33 @@ IonixGameFunctions.SetForceStopAll = function(Boolean)
 end
 
 IonixGameFunctions.GetEggPlacement = function(eggName)
-
     local GameData = IonixGameData
-	if not GameData then
-		warn("[Ionix DEBUG] ❌ GameData not found.")
-		return
-	end
-
-    local placement = GameData.GetEggPlacement(eggName)
-	if not placement then
-		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-		return
-	end
-
-    local EggCategory = GameData.GetEggCategory(eggName)
-
-    if EggCategory then
-        placement = GameData.GetEventCFrame(EggCategory)
-
-        if not placement then
-            warn(string.format(
-                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
-                EggCategory,
-                eggName
-            ))
-        end
-    else
-        warn(string.format(
-            "[Ionix DEBUG] ⚠️ No egg category found for '%s'.",
-            eggName
-        ))
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData not found.")
+        return
     end
 
-	local offset = Vector3.new(0, 6, 0)
+    local placement = GameData.GetEggPlacement(eggName)
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
+    end
+
+    local category = GameData.GetEggCategory(eggName)
+
+    if category and category ~= "Perm" then
+        local eventPos = GameData.GetEventCFrame(category)
+        if eventPos then
+            placement = eventPos
+        else
+            warn(string.format(
+                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
+                category, eggName
+            ))
+        end
+    end
+
+    local offset = Vector3.new(0, 6, 0)
     return CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
