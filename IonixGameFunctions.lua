@@ -339,7 +339,9 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 
     if GameData.AreaToTeleport[eggName] ~= nil then
         local area = GameData.AreaToTeleport[eggName]
+        print("Teleporting since its another world")
 	    RemoteEvent:FireServer("Teleport", area)
+        task.wait(2)
     else
         local area = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
 
@@ -348,14 +350,16 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
         if worldName == "The Overworld" then
             local h, alpha = GetPlayerHeight()
             if h ~= 0 then
+                print("Teleporting due to been above 0 meters")
                 RemoteEvent:FireServer("Teleport", area)
+                task.wait(2)
             end
         else
+            print("Teleporting due to been in wrong world")
             RemoteEvent:FireServer("Teleport", area)
+            task.wait(2)
         end
     end
-
-	task.wait(2)
 
 	if mode == "Ionix" then
 		_G.Ionix_.ForceStopAll = oldForceStopAll
