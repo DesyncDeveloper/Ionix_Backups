@@ -400,31 +400,32 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 		cfg.ForceStopAll = oldForceStopAll
 	end
 
-	local placement = GameData.GetEggPlacement(eggName)
-	if not placement then
-		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-		return
-	end
+    local placement = GameData.GetEggPlacement(eggName)
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
+    end
 
     local EggCategory = GameData.GetEggCategory(eggName)
-    local placement = nil
 
-    if EggCategory then
-        placement = GameData.GetEventCFrame(EggCategory)
+    -- Only override IF it's an event category (not Perm)
+    if EggCategory and EggCategory ~= "Perm" then
+        print("Category:", EggCategory)
 
-        if not placement then
+        local eventCF = GameData.GetEventCFrame(EggCategory)
+        if eventCF then
+            placement = eventCF
+        else
             warn(string.format(
                 "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame defined.",
                 EggCategory, eggName
             ))
         end
-
-    else
-        warn("[Ionix DEBUG] ⚠️ No category returned for egg:", eggName)
     end
 
-	local offset = Vector3.new(0, 6, 0)
-    Root.CFrame = CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+    local offset = Vector3.new(0, 6, 0)
+    Root.CFrame = CFrame.new(placement + offset)
+        * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
 IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
