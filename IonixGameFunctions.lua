@@ -266,39 +266,39 @@ IonixGameFunctions.SetForceStopAll = function(Boolean)
 end
 
 IonixGameFunctions.GetEggPlacement = function(eggName)
-
     local GameData = IonixGameData
-	if not GameData then
-		warn("[Ionix DEBUG] ❌ GameData not found.")
-		return
-	end
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData not found.")
+        return
+    end
 
     local placement = GameData.GetEggPlacement(eggName)
-	if not placement then
-		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-		return
-	end
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
+    end
 
     local EggCategory = GameData.GetEggCategory(eggName)
 
-    if EggCategory then
-        placement = GameData.GetEventCFrame(EggCategory)
-
-        if not placement then
+    if EggCategory and EggCategory ~= "Perm" then
+        local eventPos = GameData.GetEventCFrame(EggCategory)
+        if eventPos then
+            placement = eventPos
+        else
             warn(string.format(
                 "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
                 EggCategory,
                 eggName
             ))
         end
-    else
-        warn(string.format(
-            "[Ionix DEBUG] ⚠️ No egg category found for '%s'.",
-            eggName
-        ))
     end
 
-	local offset = Vector3.new(0, 6, 0)
+    if typeof(placement) ~= "Vector3" then
+        warn("[Ionix DEBUG] ❌ placement is not Vector3 — cannot build CFrame.", placement)
+        return
+    end
+
+    local offset = Vector3.new(0, 6, 0)
     return CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
@@ -351,41 +351,43 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 		cfg.ForceStopAll = true
 	end
 
-	task.wait(0.5)
+    if cfg.FastTp == nil or cfg.FastTp == false then
+        task.wait(0.5)
 
-    local areaToTeleport = GameData.AreaToTeleport[eggName]
+        local areaToTeleport = GameData.AreaToTeleport[eggName]
 
-    if areaToTeleport then
-        local targetWorld = ExtractWorldFromArea(areaToTeleport)
-        local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+        if areaToTeleport then
+            local targetWorld = ExtractWorldFromArea(areaToTeleport)
+            local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
 
-        if currentWorld ~= targetWorld then
-            print("Teleporting to correct world:", targetWorld)
-            RemoteEvent:FireServer("Teleport", areaToTeleport)
-            task.wait(2)
-        elseif currentWorld == "The Overworld" then
-            local h = GetPlayerHeight()
-            if h ~= 0 then
-                print("Teleporting (Overworld, but above ground)")
+            if currentWorld ~= targetWorld then
+                print("Teleporting to correct world:", targetWorld)
                 RemoteEvent:FireServer("Teleport", areaToTeleport)
                 task.wait(2)
+            elseif currentWorld == "The Overworld" then
+                local h = GetPlayerHeight()
+                if h ~= 0 then
+                    print("Teleporting (Overworld, but above ground)")
+                    RemoteEvent:FireServer("Teleport", areaToTeleport)
+                    task.wait(2)
+                end
             end
-        end
 
-    else
-        local overworldSpawn = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
-        local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
-
-        if currentWorld ~= "The Overworld" then
-            print("Teleporting (fallback wrong world)")
-            RemoteEvent:FireServer("Teleport", overworldSpawn)
-            task.wait(2)
         else
-            local h = GetPlayerHeight()
-            if h ~= 0 then
-                print("Teleporting (fallback overworld above ground)")
+            local overworldSpawn = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+            local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+
+            if currentWorld ~= "The Overworld" then
+                print("Teleporting (fallback wrong world)")
                 RemoteEvent:FireServer("Teleport", overworldSpawn)
                 task.wait(2)
+            else
+                local h = GetPlayerHeight()
+                if h ~= 0 then
+                    print("Teleporting (fallback overworld above ground)")
+                    RemoteEvent:FireServer("Teleport", overworldSpawn)
+                    task.wait(2)
+                end
             end
         end
     end
