@@ -2,7 +2,7 @@ repeat
     task.wait(0.1)
 until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-local IonixGameData = loadstring(game:HttpGet("https://getionix.xyz/scripts/GameData"))()
+local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -337,8 +337,23 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 
 	task.wait(0.5)
 
-	local area = GameData.AreaToTeleport[eggName] or "Workspace.Worlds.The Overworld.FastTravel.Spawn"
-	RemoteEvent:FireServer("Teleport", area)
+    if GameData.AreaToTeleport[eggName] ~= nil then
+        local area = GameData.AreaToTeleport[eggName]
+	    RemoteEvent:FireServer("Teleport", area)
+    else
+        local area = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+
+        local worldName = WorldUtil:GetPlayerWorld(LocalPlayer)
+
+        if worldName == "The Overworld" then
+            local h, alpha = GetPlayerHeight()
+            if h ~= 0 then
+                RemoteEvent:FireServer("Teleport", area)
+            end
+        else
+            RemoteEvent:FireServer("Teleport", area)
+        end
+    end
 
 	task.wait(2)
 
