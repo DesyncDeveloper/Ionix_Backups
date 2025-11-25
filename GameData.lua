@@ -170,6 +170,9 @@ GameData.GetEggPlacement = function(eggName)
     end
 
     local category = GameData.GetEggCategory(eggName)
+
+    print("Game Data: ", category)
+
     if category then
         local placement = GameData.GetEventCFrame(category)
         if placement then
