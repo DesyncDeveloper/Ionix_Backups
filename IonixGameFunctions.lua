@@ -280,6 +280,8 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
 
     local EggCategory = GameData.GetEggCategory(eggName)
 
+    print(EggCategory)
+
     if EggCategory and EggCategory ~= "Perm" then
         local eventPos = GameData.GetEventCFrame(EggCategory)
         if eventPos then
