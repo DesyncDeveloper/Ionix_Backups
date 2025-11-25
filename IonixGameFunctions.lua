@@ -272,12 +272,14 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
         return
     end
 
+    -- Base placement
     local placement = GameData.GetEggPlacement(eggName)
     if not placement then
         warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
         return
     end
 
+    -- Category override only for events
     local category = GameData.GetEggCategory(eggName)
 
     if category and category ~= "Perm" then
@@ -290,6 +292,12 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
                 category, eggName
             ))
         end
+    end
+
+    -- FINAL SAFETY: placement MUST be a Vector3 or we FAIL SAFE instead of crashing
+    if typeof(placement) ~= "Vector3" then
+        warn("[Ionix DEBUG] ❌ Invalid placement (not Vector3) for:", eggName, placement)
+        return
     end
 
     local offset = Vector3.new(0, 6, 0)
