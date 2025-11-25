@@ -280,8 +280,6 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
 
     local EggCategory = GameData.GetEggCategory(eggName)
 
-    print(EggCategory)
-
     if EggCategory and EggCategory ~= "Perm" then
         local eventPos = GameData.GetEventCFrame(EggCategory)
         if eventPos then
@@ -408,10 +406,7 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 
     local EggCategory = GameData.GetEggCategory(eggName)
 
-    -- Only override IF it's an event category (not Perm)
     if EggCategory and EggCategory ~= "Perm" then
-        print("Category:", EggCategory)
-
         local eventCF = GameData.GetEventCFrame(EggCategory)
         if eventCF then
             placement = eventCF
