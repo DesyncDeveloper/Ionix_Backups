@@ -149,40 +149,42 @@ local GameData = {
 
 GameData.GetEggPlacement = function(eggName)
     if not eggName or type(eggName) ~= "string" then
-        warn("[Ionix DEBUG] ❌ Invalid egg name for GetEggPlacement:", eggName)
+        warn("[Ionix DEBUG] ❌ Invalid egg name provided to GetEggPlacement:", eggName)
         return nil
     end
 
     local stored = GameData.EggPlacement[eggName]
-    if typeof(stored) == "Vector3" then
-        return stored
+    if stored then
+        if typeof(stored) == "Vector3" then
+            return stored
+        else
+            warn("[Ionix DEBUG] ⚠️ EggPlacement value for", eggName, "is not a Vector3.")
+        end
     end
 
     local primary, model = GameData.GetEggInstance(eggName)
     if primary and primary:IsA("BasePart") then
         return primary.Position
+    elseif model then
+        warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
     end
 
     local category = GameData.GetEggCategory(eggName)
-    if category and category ~= "Perm" then
-        local eventPos = GameData.GetEventCFrame(category)
-        if eventPos then
-            return eventPos
+    if category then
+        local placement = GameData.GetEventCFrame(category)
+        if placement then
+            return placement
         else
-            warn(string.format(
-                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no <EventName>CFrame defined.",
-                category, eggName
-            ))
+            warn("[Ionix DEBUG] ⚠️ Event category found ('" .. category .. "') but no CFrame stored for that event.")
         end
-    end
-
-    if not category then
+    else
         warn("[Ionix DEBUG] ⚠️ Egg does not belong to Perm or any active event:", eggName)
     end
 
     warn("[Ionix DEBUG] ❌ No placement found for egg:", eggName)
     return nil
 end
+
 
 GameData.GetEggInstance = function(eggName)
     for _, obj in ipairs(workspace.Rendered:GetDescendants()) do
