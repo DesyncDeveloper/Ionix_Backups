@@ -4,7 +4,6 @@ until game:IsLoaded() and game:GetService("Players") and game:GetService("Player
 
 local IonixGameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"))()
 
-
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
@@ -186,7 +185,13 @@ local function GetPlayerHeight()
 end
 
 local function ExtractWorldFromArea(area)
-    return area:match("Workspace%.Worlds%.(.-)%.Areas")
+    local world = area:match("Workspace%.Worlds%.([^%.]+)%.Areas")
+    if world then return world end
+
+    world = area:match("Workspace%.Worlds%.([^%.]+)%.FastTravel")
+    if world then return world end
+
+    return nil
 end
 
 local function Normalize(str)
