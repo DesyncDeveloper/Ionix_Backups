@@ -1271,7 +1271,9 @@ end
 CanProceedMoveToSpecialEgg = false
 CanProceedMoveToRiftEgg = false
 _G.Config_.ForceStopAll = false
-autoTeleportToEgg("System Started")
+if _G.Config_.TeleportToSelectedEgg then
+    autoTeleportToEgg()
+end
 CanProceedMoveToSpecialEgg = true
 CanProceedMoveToRiftEgg = true
 _G.Config_.ForceStopAll = OldForceStop
