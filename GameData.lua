@@ -88,6 +88,7 @@ local GameData = {
         "OG Egg",
         "Super OG Egg",
         "Food Egg",
+        "Super Aura Egg",
         "Chance Egg",
         "Common Egg",
         "Spotted Egg",
