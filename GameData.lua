@@ -70,7 +70,7 @@ local GameData = {
         },
     },
 
-    ActiveEvent = { "OG", "ThanksGiving" },
+    ActiveEvent = { "Winter" },
 
     AreaToTeleport = {
         ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn"
