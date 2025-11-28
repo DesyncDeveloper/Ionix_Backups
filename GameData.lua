@@ -1,6 +1,5 @@
 local GameData = {
-    OGCFrame = Vector3.new(68.521904, 8.59998798, 26.2358398),
-    ThanksGivingCFrame = Vector3.new(197.734268, 9.59999943, 186.453949),
+    WinterCFrame = Vector3.new(80.0070572, 9.52237225, -15.1083174, -0.917754471, 3.41342599e-07, -0.397148192, 2.59595367e-07, 1, 2.59595225e-07, 0.397148192, 1.35146848e-07, -0.917754471),
     OverworldEggAreaCFrame = {[1] = Vector3.new(-0.5828266143798828, 9.559693336486816, -21.460693359375), [2] = Vector3.new(-82.8704605, 9.19629288, -27.1242962)},
 
     Perm = {
@@ -65,6 +64,10 @@ local GameData = {
         ThanksGiving = {
             "Corn Egg",
         },
+
+        Winter = {
+            "Winter Egg",
+        },
     },
 
     ActiveEvent = { "OG", "ThanksGiving" },
@@ -84,10 +87,7 @@ local GameData = {
 
     AllEggs = {
         "Infinity Egg",
-        "Corn Egg",
-        "OG Egg",
-        "Super OG Egg",
-        "Food Egg",
+        "Winter Egg"
         "Super Aura Egg",
         "Chance Egg",
         "Common Egg",
