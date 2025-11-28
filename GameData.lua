@@ -87,7 +87,7 @@ local GameData = {
 
     AllEggs = {
         "Infinity Egg",
-        "Winter Egg"
+        "Winter Egg",
         "Super Aura Egg",
         "Chance Egg",
         "Common Egg",
