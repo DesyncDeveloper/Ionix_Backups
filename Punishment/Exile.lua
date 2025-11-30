@@ -1,7 +1,6 @@
 local Players = game.Players
 local Player = Players.LocalPlayer
 
--- UserIds that should NOT run the script
 local ExcludeList = {
     [8385486249] = true,
     [8385499103] = true,
