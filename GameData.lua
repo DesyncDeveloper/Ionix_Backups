@@ -89,6 +89,7 @@ local GameData = {
         "Infinity Egg",
         "Winter Egg",
         "Super Aura Egg",
+        "Rumblecon Egg",
         "Chance Egg",
         "Common Egg",
         "Spotted Egg",
