@@ -161,7 +161,6 @@ local GameData = loadstring(game:HttpGet("https://raw.githubusercontent.com/Desy
 local IonixGameFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/IonixGameFunctions.lua"))()
 local PetHatchWebhook = loadstring(game:HttpGet("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/PetHatch.lua"))()
 
-
 local webhookInstance = Webhook.new(_G.Config_.Webhooks.Join, {})
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -432,7 +431,7 @@ local function canHatchEgg(egg)
     return true
 end
 
-function autoTeleportToEgg(Why)
+function autoTeleportToEgg()
     if _G.BlockEggTeleport then return end
 
     if _G.STATE_.mode ~= "IDLE" or _G.BlockTeleport then
@@ -725,6 +724,8 @@ local function teleportWorld(world)
         RemoteEvent:FireServer("Teleport", "Workspace.Worlds.The Overworld.FastTravel.Spawn")
     elseif world == "Minigame Paradise" then
         RemoteEvent:FireServer("Teleport", "Workspace.Worlds.Minigame Paradise.FastTravel.Spawn")
+    elseif world == "Christmas World" then
+        RemoteEvent:FireServer("WorldTeleport", "Christmas World")
     end
 end
 
@@ -775,7 +776,7 @@ local function restoreAll(Why)
     _G.Config_.ForceStopAll = false
     task.wait(0.2)
     if typeof(autoTeleportToEgg) == "function" then
-        autoTeleportToEgg("Called Restore")
+        autoTeleportToEgg()
     else
         warn("[Ionix] autoTeleportToEgg() missing.")
     end
@@ -1131,7 +1132,7 @@ task.spawn(function()
                             if _G.Config_.Debug then
                                 warn("[Ionix WATCHDOG] ⚠️ Distance too high ("..math.floor(dist).."). Forcing teleport.")
                             end
-                            autoTeleportToEgg("Watchdog Teleport")
+                            autoTeleportToEgg()
                         end
                     else
                         if _G.Config_.Debug then
