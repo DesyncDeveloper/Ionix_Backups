@@ -188,11 +188,6 @@ GameData.GetEggPlacement = function(eggName)
     -- 3) EVENT FALLBACK (disabled for Christmas)
     local category = GameData.GetEggCategory(eggName)
 
-    -- BLOCK Christmas fallback so it NEVER uses ChristmasCFrame
-    if category == "Christmas" then
-        return nil  -- STOP immediately
-    end
-
     if category then
         local eventPlacement = GameData.GetEventCFrame(category)
         if eventPlacement then
