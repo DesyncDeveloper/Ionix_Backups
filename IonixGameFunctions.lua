@@ -377,24 +377,35 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 		cfg.ForceStopAll = true
 	end
 
+    local areaToTeleport = GameData.AreaToTeleport[eggName]
+
+    if areaToTeleport then
+        local targetWorld = ExtractWorldFromArea(areaToTeleport)
+        local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
+
+        if teleportMethod == "WorldTeleport" then
+            cfg.FastTp = false
+        end
+    end
+
+
     if cfg.FastTp == nil or cfg.FastTp == false then
         task.wait(0.5)
-
-        local areaToTeleport = GameData.AreaToTeleport[eggName]
 
         if areaToTeleport then
             local targetWorld = ExtractWorldFromArea(areaToTeleport)
             local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+            local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
 
             if currentWorld ~= targetWorld then
                 print("Teleporting to correct world:", targetWorld)
-                RemoteEvent:FireServer("Teleport", areaToTeleport)
+                RemoteEvent:FireServer(teleportMethod, areaToTeleport)
                 task.wait(2)
             elseif currentWorld == "The Overworld" then
                 local h = GetPlayerHeight()
                 if h ~= 0 then
                     print("Teleporting (Overworld, but above ground)")
-                    RemoteEvent:FireServer("Teleport", areaToTeleport)
+                    RemoteEvent:FireServer(teleportMethod, areaToTeleport)
                     task.wait(2)
                 end
             end
