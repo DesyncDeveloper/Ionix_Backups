@@ -98,9 +98,11 @@ local GameData = {
 
     AllEggs = {
         "Infinity Egg",
+
         "Gingerbread Egg",
         "Candycane Egg",
         "Yuletide Egg",
+
         "Super Aura Egg",
         "Rumblecon Egg",
 
@@ -169,15 +171,13 @@ GameData.GetEggPlacement = function(eggName)
         return nil
     end
 
-    local stored = GameData.EggPlacement[eggName]
-    if stored then
-        if typeof(stored) == "Vector3" then
-            return stored
-        else
-            warn("[Ionix DEBUG] ⚠️ EggPlacement value for", eggName, "is not a Vector3.")
-        end
+    -- 1) DIRECT PLACEMENT ALWAYS WINS (no fallback)
+    local storedPlacement = GameData.EggPlacement[eggName]
+    if typeof(storedPlacement) == "Vector3" then
+        return storedPlacement
     end
 
+    -- 2) TRY FIND THE ACTUAL MODEL IN WORKSPACE
     local primary, model = GameData.GetEggInstance(eggName)
     if primary and primary:IsA("BasePart") then
         return primary.Position
@@ -185,12 +185,12 @@ GameData.GetEggPlacement = function(eggName)
         warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
     end
 
+    -- 3) EVENT CATEGORY FALLBACK (ONLY IF NO EXACT PLACEMENT EXISTS)
     local category = GameData.GetEggCategory(eggName)
-
     if category then
-        local placement = GameData.GetEventCFrame(category)
-        if placement then
-            return placement
+        local eventPlacement = GameData.GetEventCFrame(category)
+        if eventPlacement then
+            return eventPlacement
         else
             warn("[Ionix DEBUG] ⚠️ Event category found ('" .. category .. "') but no CFrame stored for that event.")
         end
@@ -201,7 +201,6 @@ GameData.GetEggPlacement = function(eggName)
     warn("[Ionix DEBUG] ❌ No placement found for egg:", eggName)
     return nil
 end
-
 
 GameData.GetEggInstance = function(eggName)
     for _, obj in ipairs(workspace.Rendered:GetDescendants()) do
