@@ -355,9 +355,9 @@ IonixGameFunctions.GetMultiEggCenter = function(cfg)
     local eventName = GetCompletedEventForEggList(cfg.EggList)
     if not eventName then return nil end
 
-    local center = IonixGameData.Event.MultiPlacement[eventName]
+    local center = IonixGameData.EventMultiCenter[eventName] -- corrected table name
     if not center then
-        warn("[Ionix DEBUG] Missing MultiPlacement for:", eventName)
+        warn("[Ionix DEBUG] Missing EventMultiCenter for:", eventName)
         return nil
     end
 
