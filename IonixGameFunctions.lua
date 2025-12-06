@@ -217,6 +217,10 @@ local function GetPlayerHeight()
 end
 
 local function ExtractWorldFromArea(area)
+    if not area:find("%.") then
+        return area
+    end
+
     local world = area:match("Workspace%.Worlds%.([^%.]+)%.Areas")
     if world then return world end
 
