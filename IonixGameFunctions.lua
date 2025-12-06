@@ -443,20 +443,6 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
         return
     end
 
-    local EggCategory = GameData.GetEggCategory(eggName)
-
-    if EggCategory and EggCategory ~= "Perm" then
-        local eventCF = GameData.GetEventCFrame(EggCategory)
-        if eventCF then
-            placement = eventCF
-        else
-            warn(string.format(
-                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame defined.",
-                EggCategory, eggName
-            ))
-        end
-    end
-
     local offset = Vector3.new(0, 6, 0)
     Root.CFrame = CFrame.new(placement + offset)
         * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
