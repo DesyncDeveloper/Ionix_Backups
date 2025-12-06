@@ -171,13 +171,13 @@ GameData.GetEggPlacement = function(eggName)
         return nil
     end
 
-    -- 1) DIRECT PLACEMENT ALWAYS WINS (no fallback)
+    -- 1) DIRECT PLACEMENT ALWAYS WINS
     local storedPlacement = GameData.EggPlacement[eggName]
     if typeof(storedPlacement) == "Vector3" then
         return storedPlacement
     end
 
-    -- 2) TRY FIND THE ACTUAL MODEL IN WORKSPACE
+    -- 2) LIVE MODEL IN WORKSPACE
     local primary, model = GameData.GetEggInstance(eggName)
     if primary and primary:IsA("BasePart") then
         return primary.Position
@@ -185,8 +185,14 @@ GameData.GetEggPlacement = function(eggName)
         warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
     end
 
-    -- 3) EVENT CATEGORY FALLBACK (ONLY IF NO EXACT PLACEMENT EXISTS)
+    -- 3) EVENT FALLBACK (disabled for Christmas)
     local category = GameData.GetEggCategory(eggName)
+
+    -- BLOCK Christmas fallback so it NEVER uses ChristmasCFrame
+    if category == "Christmas" then
+        return nil  -- STOP immediately
+    end
+
     if category then
         local eventPlacement = GameData.GetEventCFrame(category)
         if eventPlacement then
@@ -194,13 +200,12 @@ GameData.GetEggPlacement = function(eggName)
         else
             warn("[Ionix DEBUG] ⚠️ Event category found ('" .. category .. "') but no CFrame stored for that event.")
         end
-    else
-        warn("[Ionix DEBUG] ⚠️ Egg does not belong to Perm or any active event:", eggName)
     end
 
     warn("[Ionix DEBUG] ❌ No placement found for egg:", eggName)
     return nil
 end
+
 
 GameData.GetEggInstance = function(eggName)
     for _, obj in ipairs(workspace.Rendered:GetDescendants()) do
