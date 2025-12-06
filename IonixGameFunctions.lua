@@ -460,12 +460,15 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
     end
 
     -- Check for multi-egg center
-    local multiCenter = IonixGameFunctions.GetMultiEggCenter(cfg)
-    if multiCenter then
-        print("[Ionix DEBUG] ⭐ Multi-egg center used")
-        local offset = Vector3.new(0, 6, 0)
-        Root.CFrame = CFrame.new(multiCenter + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
-        return
+
+    if cfg.EggSwapEnabled == true then
+        local multiCenter = IonixGameFunctions.GetMultiEggCenter(cfg)
+        if multiCenter then
+            print("[Ionix DEBUG] ⭐ Multi-egg center used")
+            local offset = Vector3.new(0, 6, 0)
+            Root.CFrame = CFrame.new(multiCenter + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+            return
+        end
     end
 
     -- Single egg placement fallback
