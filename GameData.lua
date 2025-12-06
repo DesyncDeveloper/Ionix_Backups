@@ -81,6 +81,10 @@ local GameData = {
         },
     },
 
+    EventMultiCenter = {
+        ["Christmas"] = Vector3.new(-2479, 37, 1244)
+    },
+
     ActiveEvent = { "Christmas" },
 
     AreaToTeleport = {
@@ -187,6 +191,11 @@ GameData.GetEggPlacement = function(eggName)
 
     -- 3) EVENT FALLBACK (disabled for Christmas)
     local category = GameData.GetEggCategory(eggName)
+
+    -- BLOCK Christmas fallback so it NEVER uses ChristmasCFrame
+    if category == "Christmas" then
+        return nil  -- STOP immediately
+    end
 
     if category then
         local eventPlacement = GameData.GetEventCFrame(category)
