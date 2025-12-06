@@ -1,5 +1,5 @@
 local GameData = {
-    WinterCFrame = Vector3.new(80.0070572, 9.52237225, -15.1083174),
+    ChristmasCFrame = Vector3.new(-2482, 36, 1225),
     OverworldEggAreaCFrame = {[1] = Vector3.new(-0.5828266143798828, 9.559693336486816, -21.460693359375), [2] = Vector3.new(-82.8704605, 9.19629288, -27.1242962)},
 
     Perm = {
@@ -31,6 +31,11 @@ local GameData = {
 
     EggPlacement = {
         ["Infinity Egg"] = Vector3.new(-99.884392, 5.942852, -24.176849),
+
+        ["Gingerbread Egg"] = Vector3.new(-2473, 37, 1252),
+        ["Candycane Egg"] = Vector3.new(-2479, 37, 1244),
+        ["Yuletide Egg"] = Vector3.new(-2486, 37, 1235),
+
         ["Common Egg"] = Vector3.new(-83.5116577, 7.129426, 2.19293237),
         ["Spotted Egg"] = Vector3.new(-93.7220459, 7.129426, 8.14954662),
         ["Iceshard Egg"] = Vector3.new(-117.494141, 7.12944984, 9.676651),
@@ -68,9 +73,15 @@ local GameData = {
         Winter = {
             "Winter Egg",
         },
+
+        Christmas = {
+            "Gingerbread Egg",
+            "Candycane Egg",
+            "Yuletide Egg"
+        },
     },
 
-    ActiveEvent = { "Winter" },
+    ActiveEvent = { "Christmas" },
 
     AreaToTeleport = {
         ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn"
@@ -87,9 +98,12 @@ local GameData = {
 
     AllEggs = {
         "Infinity Egg",
-        "Winter Egg",
+        "Gingerbread Egg",
+        "Candycane Egg",
+        "Yuletide Egg",
         "Super Aura Egg",
         "Rumblecon Egg",
+
         "Chance Egg",
         "Common Egg",
         "Spotted Egg",
