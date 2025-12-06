@@ -304,18 +304,20 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
         return
     end
 
-    local EggCategory = GameData.GetEggCategory(eggName)
+   local EggCategory = GameData.GetEggCategory(eggName)
 
-    if EggCategory and EggCategory ~= "Perm" then
-        local eventPos = GameData.GetEventCFrame(EggCategory)
-        if eventPos then
-            placement = eventPos
-        else
-            warn(string.format(
-                "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame exists.",
-                EggCategory,
-                eggName
-            ))
+-- Only override placement if the egg does NOT have a direct placement stored
+    if not GameData.EggPlacement[eggName] then
+        if EggCategory and EggCategory ~= "Perm" then
+            local eventCF = GameData.GetEventCFrame(EggCategory)
+            if eventCF then
+                placement = eventCF
+            else
+                warn(string.format(
+                    "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame defined.",
+                    EggCategory, eggName
+                ))
+            end
         end
     end
 
