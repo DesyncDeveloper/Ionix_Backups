@@ -280,27 +280,20 @@ local function GetRiftsFromName(Name)
 end
 
 local function GetCompletedEventForEggList(selectedEggs)
-    if not selectedEggs then return nil end
-
+    if not selectedEggs or #selectedEggs == 0 then return nil end
     local eventData = IonixGameData.Event
     if not eventData then return nil end
 
     for eventName, eventEggList in pairs(eventData) do
         if typeof(eventEggList) == "table" and #eventEggList > 0 then
-
-            local count = 0
-
-            for _, selectedEgg in ipairs(selectedEggs) do
-                for _, eventEgg in ipairs(eventEggList) do
-                    if selectedEgg == eventEgg then
-                        count += 1
-                    end
+            local allFound = true
+            for _, egg in ipairs(eventEggList) do
+                if not table.find(selectedEggs, egg) then
+                    allFound = false
+                    break
                 end
             end
-
-            if count == #eventEggList then
-                return eventName
-            end
+            if allFound then return eventName end
         end
     end
 
@@ -332,8 +325,7 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
         return
     end
 
-   local EggCategory = GameData.GetEggCategory(eggName)
-
+    local EggCategory = GameData.GetEggCategory(eggName)
     if not GameData.EggPlacement[eggName] then
         if EggCategory and EggCategory ~= "Perm" then
             local eventCF = GameData.GetEventCFrame(EggCategory)
@@ -357,70 +349,75 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
     return CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
+IonixGameFunctions.GetMultiEggCenter = function(cfg)
+    if not cfg or not cfg.EggSwapEnabled or not cfg.EggList or #cfg.EggList == 0 then return nil end
+
+    local eventName = GetCompletedEventForEggList(cfg.EggList)
+    if not eventName then return nil end
+
+    local center = IonixGameData.Event.MultiPlacement[eventName]
+    if not center then
+        warn("[Ionix DEBUG] Missing MultiPlacement for:", eventName)
+        return nil
+    end
+
+    return center
+end
+
 IonixGameFunctions.TeleportToSelectedEgg = function()
+    if _G.BlockEggTeleport then return end
 
-	if _G.BlockEggTeleport then return end
+    local STATE = _G.STATE_
+    if STATE and (STATE.mode == "RIFT" or STATE.mode == "SPECIAL") then return end
 
-	local STATE = _G.STATE_
-	if STATE and (STATE.mode == "RIFT" or STATE.mode == "SPECIAL") then
-		return
-	end
+    local cfg, mode = GetConfig()
+    if not cfg then
+        warn("[Ionix DEBUG] ❌ Config missing (" .. mode .. " mode).")
+        return
+    end
 
-	local cfg, mode = GetConfig()
-	if not cfg then
-		warn("[Ionix DEBUG] ❌ Config missing (" .. mode .. " mode).")
-		return
-	end
+    if mode == "Legacy" and not cfg.TeleportToSelectedEgg then
+        warn("[Ionix DEBUG] ⚠️ Teleport disabled or ForceStopAll true (Legacy).")
+        return
+    end
 
-	if mode == "Legacy" then
-		if not cfg.TeleportToSelectedEgg then
-			warn("[Ionix DEBUG] ⚠️ Teleport disabled or ForceStopAll true (Legacy).")
-			return
-		end
-	end
+    local eggName = cfg.SelectedEgg
+    if not eggName then
+        warn("[Ionix DEBUG] ❌ SelectedEgg is nil.")
+        return
+    end
 
-	local eggName = cfg.SelectedEgg
-	if not eggName then
-		warn("[Ionix DEBUG] ❌ SelectedEgg is nil.")
-		return
-	end
+    local GameData = IonixGameData
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData not found.")
+        return
+    end
 
-	local GameData = IonixGameData
-	if not GameData then
-		warn("[Ionix DEBUG] ❌ GameData not found.")
-		return
-	end
+    local Root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not Root then
+        warn("[Ionix DEBUG] ❌ Missing HumanoidRootPart.")
+        return
+    end
 
-	local Root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-	if not Root then
-		warn("[Ionix DEBUG] ❌ Missing HumanoidRootPart.")
-		return
-	end
-
-	local oldForceStopAll
-	if mode == "Ionix" then
-		oldForceStopAll = _G.Ionix_.ForceStopAll
-		_G.Ionix_.ForceStopAll = true
-	else
-		oldForceStopAll = cfg.ForceStopAll
-		cfg.ForceStopAll = true
-	end
+    local oldForceStopAll
+    if mode == "Ionix" then
+        oldForceStopAll = _G.Ionix_.ForceStopAll
+        _G.Ionix_.ForceStopAll = true
+    else
+        oldForceStopAll = cfg.ForceStopAll
+        cfg.ForceStopAll = true
+    end
 
     local areaToTeleport = GameData.AreaToTeleport[eggName]
-
     if areaToTeleport then
         local targetWorld = ExtractWorldFromArea(areaToTeleport)
         local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
-
-        if teleportMethod == "WorldTeleport" then
-            cfg.FastTp = false
-        end
+        if teleportMethod == "WorldTeleport" then cfg.FastTp = false end
     end
 
-
+    -- Standard teleport logic
     if cfg.FastTp == nil or cfg.FastTp == false then
         task.wait(0.5)
-
         if areaToTeleport then
             local targetWorld = ExtractWorldFromArea(areaToTeleport)
             local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
@@ -438,11 +435,9 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
                     task.wait(2)
                 end
             end
-
         else
             local overworldSpawn = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
             local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
-
             if currentWorld ~= "The Overworld" then
                 print("Teleporting (fallback wrong world)")
                 RemoteEvent:FireServer("Teleport", overworldSpawn)
@@ -458,41 +453,30 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
         end
     end
 
-	if mode == "Ionix" then
-		_G.Ionix_.ForceStopAll = oldForceStopAll
-	else
-		cfg.ForceStopAll = oldForceStopAll
-	end
+    if mode == "Ionix" then
+        _G.Ionix_.ForceStopAll = oldForceStopAll
+    else
+        cfg.ForceStopAll = oldForceStopAll
+    end
 
-	local selectedEggs = cfg.EggList
-	local eventName = GetCompletedEventForEggList(selectedEggs)
+    -- Check for multi-egg center
+    local multiCenter = IonixGameFunctions.GetMultiEggCenter(cfg)
+    if multiCenter then
+        print("[Ionix DEBUG] ⭐ Multi-egg center used")
+        local offset = Vector3.new(0, 6, 0)
+        Root.CFrame = CFrame.new(multiCenter + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+        return
+    end
 
-	if eventName then
-		print("[Ionix DEBUG] ⭐ Full event selected:", eventName)
+    -- Single egg placement fallback
+    local placement = GameData.GetEggPlacement(eggName)
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
+    end
 
-		local mpTable = IonixGameData.Event.MultiPlacement
-		if mpTable and mpTable[eventName] then
-			local pos = mpTable[eventName]
-			local offset = Vector3.new(0, 6, 0)
-
-			Root.CFrame = CFrame.new(pos + offset)
-				* CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
-
-			return
-		else
-			warn("[Ionix DEBUG] ❌ Missing MultiPlacement for event:", eventName)
-		end
-	end
-
-	local placement = GameData.GetEggPlacement(eggName)
-	if not placement then
-		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-		return
-	end
-
-	local offset = Vector3.new(0, 6, 0)
-	Root.CFrame = CFrame.new(placement + offset)
-		* CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+    local offset = Vector3.new(0, 6, 0)
+    Root.CFrame = CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
 IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
