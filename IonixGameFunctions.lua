@@ -279,6 +279,34 @@ local function GetRiftsFromName(Name)
     return results, data
 end
 
+local function GetCompletedEventForEggList(selectedEggs)
+    if not selectedEggs then return nil end
+
+    local eventData = IonixGameData.Event
+    if not eventData then return nil end
+
+    for eventName, eventEggList in pairs(eventData) do
+        if typeof(eventEggList) == "table" and #eventEggList > 0 then
+
+            local count = 0
+
+            for _, selectedEgg in ipairs(selectedEggs) do
+                for _, eventEgg in ipairs(eventEggList) do
+                    if selectedEgg == eventEgg then
+                        count += 1
+                    end
+                end
+            end
+
+            if count == #eventEggList then
+                return eventName
+            end
+        end
+    end
+
+    return nil
+end
+
 local IonixGameFunctions = {}
 
 IonixGameFunctions.SetForceStopAll = function(Boolean)
@@ -306,7 +334,6 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
 
    local EggCategory = GameData.GetEggCategory(eggName)
 
--- Only override placement if the egg does NOT have a direct placement stored
     if not GameData.EggPlacement[eggName] then
         if EggCategory and EggCategory ~= "Perm" then
             local eventCF = GameData.GetEventCFrame(EggCategory)
@@ -437,15 +464,35 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
 		cfg.ForceStopAll = oldForceStopAll
 	end
 
-    local placement = GameData.GetEggPlacement(eggName)
-    if not placement then
-        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
-        return
-    end
+	local selectedEggs = cfg.EggList
+	local eventName = GetCompletedEventForEggList(selectedEggs)
 
-    local offset = Vector3.new(0, 6, 0)
-    Root.CFrame = CFrame.new(placement + offset)
-        * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+	if eventName then
+		print("[Ionix DEBUG] ⭐ Full event selected:", eventName)
+
+		local mpTable = IonixGameData.Event.MultiPlacement
+		if mpTable and mpTable[eventName] then
+			local pos = mpTable[eventName]
+			local offset = Vector3.new(0, 6, 0)
+
+			Root.CFrame = CFrame.new(pos + offset)
+				* CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+
+			return
+		else
+			warn("[Ionix DEBUG] ❌ Missing MultiPlacement for event:", eventName)
+		end
+	end
+
+	local placement = GameData.GetEggPlacement(eggName)
+	if not placement then
+		warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+		return
+	end
+
+	local offset = Vector3.new(0, 6, 0)
+	Root.CFrame = CFrame.new(placement + offset)
+		* CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
 end
 
 IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
