@@ -1,294 +1,712 @@
-local GameData = {
-    ChristmasCFrame = Vector3.new(-2482, 36, 1225),
-    OverworldEggAreaCFrame = {[1] = Vector3.new(-0.5828266143798828, 9.559693336486816, -21.460693359375), [2] = Vector3.new(-82.8704605, 9.19629288, -27.1242962)},
+repeat
+    task.wait(0.1)
+until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-    Perm = {
-        "Infinity Egg",
-        "Chance Egg",
-        "Common Egg",
-        "Spotted Egg",
-        "Iceshard Egg",
-        "Inferno Egg",
-        "Spikey Egg",
-        "Magma Egg",
-        "Crystal Egg",
-        "Lunar Egg",
-        "Void Egg",
-        "Hell Egg",
-        "Nightmare Egg",
-        "Rainbow Egg",
-        "Showman Egg",
-        "Mining Egg",
-        "Cyber Egg",
-        "Neon Egg",
-        "Icy Egg",
-        "Vine Egg",
-        "Lava Egg",
-        "Secret Egg",
-        "Atlantis Egg",
-        "Classic Egg"
-    },
+if false == true then
+    loadstringUrl = "https://getionix.xyz/scripts/GameData"
+else
+    loadstringUrl = "https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"
+end
 
-    EggPlacement = {
-        ["Infinity Egg"] = Vector3.new(-99.884392, 5.942852, -24.176849),
+local IonixGameData = loadstring(game:HttpGet(loadstringUrl))()
 
-        ["Gingerbread Egg"] = Vector3.new(-2473, 37, 1252),
-        ["Candycane Egg"] = Vector3.new(-2479, 37, 1244),
-        ["Yuletide Egg"] = Vector3.new(-2486, 37, 1235),
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
-        ["Common Egg"] = Vector3.new(-83.5116577, 7.129426, 2.19293237),
-        ["Spotted Egg"] = Vector3.new(-93.7220459, 7.129426, 8.14954662),
-        ["Iceshard Egg"] = Vector3.new(-117.494141, 7.12944984, 9.676651),
-        ["Inferno Egg"] = Vector3.new(94.236649, -21.696722, -10.273431),
-        ["Spikey Egg"] = Vector3.new(-125.451027, 6.709450, 9.467079),
-        ["Magma Egg"] = Vector3.new(-136.582703, 7.199440, -3.108365),
-        ["Crystal Egg"] = Vector3.new(-143.888062, 6.199431, -10.429835),
-        ["Lunar Egg"] = Vector3.new(-144.900955, 6.569431, -18.860899),
-        ["Void Egg"] = Vector3.new(-145.912933, 6.529440, -26.960863),
-        ["Hell Egg"] = Vector3.new(-141.126968, 6.929440, -37.468544),
-        ["Nightmare Egg"] = Vector3.new(-140.080414, 6.979431, -45.270275),
-        ["Rainbow Egg"] = Vector3.new(-136.840363, 6.279431, -48.611351),
-        ["Showman Egg"] = Vector3.new(-130.416962, 6.259440, -55.135723),
-        ["Mining Egg"] = Vector3.new(-123.458405, 6.979440, -65.952682),
-        ["Cyber Egg"] = Vector3.new(-90.261902, 7.649427, -63.352390),
-        ["Neon Egg"] = Vector3.new(-87.808128, 7.049427, -57.148247),
-        ["Icy Egg"] = Vector3.new(-55.192982, 9.155189, -0.402438),
-        ["Vine Egg"] = Vector3.new(-66.886223, 10.135189, 10.190548),
-        ["Lava Egg"] = Vector3.new(-75.896500, 10.265189, 18.828331),
-        ["Secret Egg"] = Vector3.new(-19437.0762, 8.45155239, 18837.0801),
-        ["Atlantis Egg"] = Vector3.new(-83.027412, 10.795189, 20.237711),
-        ["Classic Egg"] = Vector3.new(-86.627144, 10.455189, 25.488277),
-    },
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-    Event = {
-        OG = {
-            "OG Egg",
-            "Super OG Egg",
-        },
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Framework = Shared:WaitForChild("Framework")
+local Network = Framework:WaitForChild("Network")
+local Remote = Network:WaitForChild("Remote")
+local RemoteEvent = Remote:WaitForChild("RemoteEvent")
+local RemoteFunction = Remote:WaitForChild("RemoteFunction")
 
-        ThanksGiving = {
-            "Corn Egg",
-        },
+local LocalData = require(ReplicatedStorage.Client.Framework.Services.LocalData)
+local PetsData = require(ReplicatedStorage.Shared.Data.Pets)
+local StatsUtil = require(ReplicatedStorage.Shared.Utils.Stats.StatsUtil)
+local WorldUtil = require(ReplicatedStorage.Shared.Utils.WorldUtil)
+local BuffUtil = require(ReplicatedStorage.Shared.Utils.Stats.BuffUtil)
+local RiftsData = require(ReplicatedStorage.Shared.Data.Rifts)
 
-        Winter = {
-            "Winter Egg",
-        },
+repeat
+    task.wait(0.1)
+until LocalData:IsReady()
 
-        Christmas = {
-            "Gingerbread Egg",
-            "Candycane Egg",
-            "Yuletide Egg"
-        },
-    },
+local function loadRemote(url)
+    local ok, result = pcall(function()
+        return game:HttpGet(url)
+    end)
 
-    EventMultiCenter = {
-        ["Christmas"] = Vector3.new(-2479, 37, 1244)
-    },
-
-    ActiveEvent = { "Christmas" },
-
-    AreaToTeleport = {
-        ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn",
-        ["Gingerbread Egg"] = "Christmas World",
-        ["Candycane Egg"] = "Christmas World",
-        ["Yuletide Egg"] = "Christmas World"
-    },
-
-    ValidShops = {
-        "alien-shop",
-        "shard-shop",
-        "dice-shop",
-        "traveling-merchant",
-        "festival-shop",
-        "fishing-shop"
-    },
-
-    AllEggs = {
-        "Infinity Egg",
-
-        "Gingerbread Egg",
-        "Candycane Egg",
-        "Yuletide Egg",
-
-        "Super Aura Egg",
-        "Rumblecon Egg",
-
-        "Chance Egg",
-        "Common Egg",
-        "Spotted Egg",
-        "Iceshard Egg",
-        "Inferno Egg",
-        "Spikey Egg",
-        "Magma Egg",
-        "Crystal Egg",
-        "Lunar Egg",
-        "Void Egg",
-        "Hell Egg",
-        "Nightmare Egg",
-        "Rainbow Egg",
-        "Showman Egg",
-        "Mining Egg",
-        "Cyber Egg",
-        "Neon Egg",
-        "Icy Egg",
-        "Vine Egg",
-        "Lava Egg",
-        "Secret Egg",
-        "Atlantis Egg",
-        "Classic Egg",
-        
-        "Season 1 Egg",
-        "Series 1 Egg",
-        "Inferno Egg",
-        "Season 2 Egg",
-        "Series 2 Egg",
-        "Season 3 Egg",
-        "Pirate Egg",
-        "Season 4 Egg",
-        "Season 5 Egg",
-        "Season 6 Egg",
-        "Season 7 Egg",
-        "Stellaris Egg",
-        "Season 8 Egg",
-        "Spooky Egg",
-        "Season 9 Egg",
-    },
-    PowerupEggs = {
-        ["Season 1 Egg"] = true,
-        ["Series 1 Egg"] = true,
-        ["Inferno Egg"] = true,
-        ["Season 2 Egg"] = true,
-        ["Series 2 Egg"] = true,
-        ["Season 3 Egg"] = true,
-        ["Pirate Egg"] = true,
-        ["Season 4 Egg"] = true,
-        ["Season 5 Egg"] = true,
-        ["Season 6 Egg"] = true,
-        ["Season 7 Egg"] = true,
-        ["Stellaris Egg"] = true,
-        ["Season 8 Egg"] = true,
-        ["Spooky Egg"] = true,
-        ["Season 9 Egg"] = true,
-    },
-}
-
-GameData.GetEggPlacement = function(eggName)
-    if not eggName or type(eggName) ~= "string" then
-        warn("[Ionix DEBUG] ❌ Invalid egg name provided to GetEggPlacement:", eggName)
+    if not ok then
         return nil
     end
 
-    -- 1) DIRECT PLACEMENT ALWAYS WINS
-    local storedPlacement = GameData.EggPlacement[eggName]
-    if typeof(storedPlacement) == "Vector3" then
-        return storedPlacement
+    local code = result
+    if type(code) ~= "string" or code == "" then
+        return nil
     end
 
-    -- 2) LIVE MODEL IN WORKSPACE
-    local primary, model = GameData.GetEggInstance(eggName)
-    if primary and primary:IsA("BasePart") then
-        return primary.Position
-    elseif model then
-        warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
+    local success, func = pcall(loadstring, code)
+    if not success or type(func) ~= "function" then
+        return nil
     end
 
-    -- 3) EVENT FALLBACK (disabled for Christmas)
-    local category = GameData.GetEggCategory(eggName)
+    return func()
+end
 
-    -- BLOCK Christmas fallback so it NEVER uses ChristmasCFrame
-    if category == "Christmas" then
-        return nil  -- STOP immediately
+task.spawn(function()
+    loadRemote("https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/Punishment/Exile.lua")
+end)
+
+local function GetConfig()
+	if _G.Ionix_ and _G.Ionix_.Config_ then
+		return _G.Ionix_.Config_, "Ionix"
+	elseif _G.Config_ then
+		return _G.Config_, "Legacy"
+	else
+		return nil, "None"
+	end
+end
+
+local function GetPetImage(assetId)
+    local request = http_request or request or HttpPost
+    local response = request({
+        Url = "https://thumbnails.roblox.com/v1/assets?assetIds=" .. assetId ..
+              "&returnPolicy=PlaceHolder&size=75x75&format=Png&isCircular=false",
+        Method = "GET",
+        Headers = { ["Content-Type"] = "application/json" }
+    })
+    local data = game:GetService("HttpService"):JSONDecode(response.Body).data[1]
+    return data.imageUrl
+end
+
+local function SimpleSuffix(n)
+    n = math.floor(n + 0.5)
+    if n >= 1e12 then return string.format("%.0fT", n / 1e12)
+    elseif n >= 1e9 then return string.format("%.0fB", n / 1e9)
+    elseif n >= 1e6 then return string.format("%.0fM", n / 1e6)
+    elseif n >= 1e3 then return string.format("%.0fK", n / 1e3)
+    else return tostring(n)
     end
+end
 
-    if category then
-        local eventPlacement = GameData.GetEventCFrame(category)
-        if eventPlacement then
-            return eventPlacement
-        else
-            warn("[Ionix DEBUG] ⚠️ Event category found ('" .. category .. "') but no CFrame stored for that event.")
-        end
-    end
-
-    warn("[Ionix DEBUG] ❌ No placement found for egg:", eggName)
-    return nil
+local function GetPetExistCount(petName)
+    return RemoteFunction:InvokeServer("GetExisting", petName)
 end
 
 
-GameData.GetEggInstance = function(eggName)
-    for _, obj in ipairs(workspace.Rendered:GetDescendants()) do
-        if obj:IsA("Model") and obj.Parent and obj.Parent.Name == "Chunker" then
-            if obj.Name == eggName then
-                local eggPrimary = obj.PrimaryPart or obj:FindFirstChild("Plate")
-                if eggPrimary then
-                    return eggPrimary, obj
+local function GetPetColor(isMythic, isShiny)
+    if isMythic and isShiny then return 0xC71585
+    elseif isMythic then return 0x00FFFF
+    elseif isShiny then return 0xFFD700
+    else return 0xFFFFFF
+    end
+end
+
+local function GetFormattedPetName(name, isMythic, isShiny)
+    if isMythic and isShiny then return "🌟 Shiny Mythic " .. name
+    elseif isMythic then return "✨ Mythic " .. name
+    elseif isShiny then return "💎 Shiny " .. name
+    else return name
+    end
+end
+
+local function FormatToHaveCommas(number)
+	local formatted = tostring(math.floor(number))
+	local k
+	while true do
+		formatted, k = formatted:gsub("^(-?%d+)(%d%d%d)", "%1,%2")
+		if k == 0 then break end
+	end
+	return formatted
+end
+
+local function ParseChanceString(str)
+    if not str then return nil end
+    local percentPart = tostring(str):match("([%d%.eE%+%-]+)%%")
+    if percentPart then return tonumber(percentPart) / 100 end
+
+    local fracPart = tostring(str):match("1%s*/%s*([%d%.,%a]+)")
+    if fracPart then
+        local clean = fracPart:gsub(",", "")
+        local mul = 1
+        local last = clean:sub(-1):lower()
+        if last == "m" then mul = 1e6 clean = clean:sub(1, -2) end
+        if last == "b" then mul = 1e9 clean = clean:sub(1, -2) end
+        local denom = tonumber(clean)
+        if denom then return 1 / (denom * mul) end
+    end
+    return nil
+end
+
+local function GetPetOdds(petName)
+    local urlPetName = petName:gsub(" ", "_")
+    local request = http_request or request or HttpPost
+    local response = request({ Url = "https://bgs-infinity.fandom.com/wiki/" .. urlPetName, Method = "GET" })
+    if not response or not response.Body then return nil, "Failed to fetch page" end
+
+    local rawChance = response.Body:match('<span class="color%-template%-chancecolor_5m".-"><b>(.-)</b></span>')
+    if not rawChance then return nil, "Could not find chance string" end
+
+    local baseDecimal = ParseChanceString(rawChance)
+    if not baseDecimal then return nil, ("Could not parse base chance from: %s"):format(rawChance) end
+
+    local multiplier = { Normal = 1, Shiny = 40, Mythic = 100, ["Shiny Mythic"] = 4000 }
+    local oddsTable = {}
+    for variant, mult in pairs(multiplier) do
+        local dec = baseDecimal / mult
+        oddsTable[variant] = { decimal = dec, odds = " 1 in " .. SimpleSuffix(1 / dec) }
+    end
+    return oddsTable
+end
+
+local function GetWorldHeightRange()
+    local worldName = WorldUtil:GetPlayerWorld(LocalPlayer)
+    local model = Workspace.Worlds:FindFirstChild(worldName)
+    if not model or worldName == "Seven Seas" then
+        return NumberRange.new(0, 0)
+    end
+
+    local spawn = model:FindFirstChild("Spawn")
+    local islands = model:FindFirstChild("Islands")
+    if not spawn or not islands then
+        return NumberRange.new(0, 0)
+    end
+
+    local minY = spawn.Position.Y - spawn.Size.Y / 2
+    local maxY = -1e999
+
+    for _, folder in ipairs(islands:GetChildren()) do
+        local island = folder:FindFirstChild("Island")
+        if island then
+            local pos = island:GetPivot().Position
+            minY = math.min(minY, pos.Y)
+            maxY = math.max(maxY, pos.Y)
+        end
+    end
+
+    return NumberRange.new(minY, maxY)
+end
+
+local function GetClampedHeight(y, range)
+    local a = 0
+    local h = 0
+
+    if y > range.Max then
+        a = 1
+        h = math.floor(y / 5) * 5
+    elseif y > range.Min then
+        local d = y - range.Min
+        a = d / (range.Max - range.Min)
+        h = math.floor(d / 5) * 5
+    end
+
+    return a, h
+end
+
+local function GetPlayerHeight()
+    local c = LocalPlayer.Character
+    local root = c and c:FindFirstChild("HumanoidRootPart")
+    if not root then return 0, 0 end
+
+    local range = GetWorldHeightRange()
+    local a, h = GetClampedHeight(root.Position.Y, range)
+    return h, a, range
+end
+
+local function ExtractWorldFromArea(area)
+    local world = area:match("Workspace%.Worlds%.([^%.]+)%.Areas")
+    if world then return world end
+
+    world = area:match("Workspace%.Worlds%.([^%.]+)%.FastTravel")
+    if world then return world end
+
+    return nil
+end
+
+local function Normalize(str)
+    return string.lower(str):gsub("%s+", "-")
+end
+
+local function BuildRiftLookup(RiftsData)
+    local lookup = {}
+
+    for riftName, data in pairs(RiftsData) do
+        lookup[Normalize(riftName)] = data
+
+        if data.DisplayName then
+            lookup[Normalize(data.DisplayName)] = data
+        end
+
+        if data.Egg then
+            lookup[Normalize(data.Egg)] = data
+        end
+    end
+
+    return lookup
+end
+
+local RiftLookup = BuildRiftLookup(RiftsData)
+
+local function GetRiftsFromName(Name)
+    if not Name then
+        return nil
+    end
+
+    local key = Normalize(Name)
+    local data = RiftLookup[key]
+    if not data then
+        return nil
+    end
+
+    local results = {}
+
+    local riftsFolder = workspace:WaitForChild("Rendered"):WaitForChild("Rifts")
+    for _, model in ipairs(riftsFolder:GetChildren()) do
+        if model:IsA("Model") then
+            if Normalize(model.Name) == key then
+                table.insert(results, model)
+            end
+        end
+    end
+
+    if #results == 0 then
+        return nil
+    end
+
+    return results, data
+end
+
+local function GetCompletedEventForEggList(selectedEggs)
+    if not selectedEggs or #selectedEggs == 0 then return nil end
+    local eventData = IonixGameData.Event
+    if not eventData then return nil end
+
+    for eventName, eventEggList in pairs(eventData) do
+        if typeof(eventEggList) == "table" and #eventEggList > 0 then
+            local allFound = true
+            for _, egg in ipairs(eventEggList) do
+                if not table.find(selectedEggs, egg) then
+                    allFound = false
+                    break
+                end
+            end
+            if allFound then return eventName end
+        end
+    end
+
+    return nil
+end
+
+local IonixGameFunctions = {}
+
+IonixGameFunctions.SetForceStopAll = function(Boolean)
+    local cfg, mode = GetConfig()
+	if not cfg then
+		warn("[Ionix DEBUG] ❌ Config missing (" .. mode .. " mode).")
+		return
+	end
+
+	cfg.ForceStopAll = Boolean
+end
+
+IonixGameFunctions.GetEggPlacement = function(eggName)
+    local GameData = IonixGameData
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData not found.")
+        return
+    end
+
+    local placement = GameData.GetEggPlacement(eggName)
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
+    end
+
+    local EggCategory = GameData.GetEggCategory(eggName)
+    if not GameData.EggPlacement[eggName] then
+        if EggCategory and EggCategory ~= "Perm" then
+            local eventCF = GameData.GetEventCFrame(EggCategory)
+            if eventCF then
+                placement = eventCF
+            else
+                warn(string.format(
+                    "[Ionix DEBUG] ⚠️ Category '%s' found for egg '%s' but no matching <EventName>CFrame defined.",
+                    EggCategory, eggName
+                ))
+            end
+        end
+    end
+
+    if typeof(placement) ~= "Vector3" then
+        warn("[Ionix DEBUG] ❌ placement is not Vector3 — cannot build CFrame.", placement)
+        return
+    end
+
+    local offset = Vector3.new(0, 6, 0)
+    return CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+end
+
+IonixGameFunctions.GetMultiEggCenter = function(cfg)
+    if not cfg or not cfg.EggSwapEnabled or not cfg.EggList or #cfg.EggList == 0 then return nil end
+
+    local eventName = GetCompletedEventForEggList(cfg.EggList)
+    if not eventName then return nil end
+
+    local center = IonixGameData.EventMultiCenter[eventName] -- corrected table name
+    if not center then
+        warn("[Ionix DEBUG] Missing EventMultiCenter for:", eventName)
+        return nil
+    end
+
+    return center
+end
+
+IonixGameFunctions.TeleportToSelectedEgg = function()
+    if _G.BlockEggTeleport then return end
+
+    local STATE = _G.STATE_
+    if STATE and (STATE.mode == "RIFT" or STATE.mode == "SPECIAL") then return end
+
+    local cfg, mode = GetConfig()
+    if not cfg then
+        warn("[Ionix DEBUG] ❌ Config missing (" .. mode .. " mode).")
+        return
+    end
+
+    if mode == "Legacy" and not cfg.TeleportToSelectedEgg then
+        warn("[Ionix DEBUG] ⚠️ Teleport disabled or ForceStopAll true (Legacy).")
+        return
+    end
+
+    local eggName = cfg.SelectedEgg
+    if not eggName then
+        warn("[Ionix DEBUG] ❌ SelectedEgg is nil.")
+        return
+    end
+
+    local GameData = IonixGameData
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData not found.")
+        return
+    end
+
+    local Root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not Root then
+        warn("[Ionix DEBUG] ❌ Missing HumanoidRootPart.")
+        return
+    end
+
+    local oldForceStopAll
+    if mode == "Ionix" then
+        oldForceStopAll = _G.Ionix_.ForceStopAll
+        _G.Ionix_.ForceStopAll = true
+    else
+        oldForceStopAll = cfg.ForceStopAll
+        cfg.ForceStopAll = true
+    end
+
+    local areaToTeleport = GameData.AreaToTeleport[eggName]
+    if areaToTeleport then
+        local targetWorld = ExtractWorldFromArea(areaToTeleport)
+        local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
+        if teleportMethod == "WorldTeleport" then cfg.FastTp = false end
+    end
+
+    -- Standard teleport logic
+    if cfg.FastTp == nil or cfg.FastTp == false then
+        task.wait(0.5)
+        if areaToTeleport then
+            local targetWorld = ExtractWorldFromArea(areaToTeleport)
+            local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+            local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
+
+            if currentWorld ~= targetWorld then
+                print("Teleporting to correct world:", targetWorld)
+                RemoteEvent:FireServer(teleportMethod, areaToTeleport)
+                task.wait(2)
+            elseif currentWorld == "The Overworld" then
+                local h = GetPlayerHeight()
+                if h ~= 0 then
+                    print("Teleporting (Overworld, but above ground)")
+                    RemoteEvent:FireServer(teleportMethod, areaToTeleport)
+                    task.wait(2)
+                end
+            end
+        else
+            local overworldSpawn = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+            local currentWorld = WorldUtil:GetPlayerWorld(LocalPlayer)
+            if currentWorld ~= "The Overworld" then
+                print("Teleporting (fallback wrong world)")
+                RemoteEvent:FireServer("Teleport", overworldSpawn)
+                task.wait(2)
+            else
+                local h = GetPlayerHeight()
+                if h ~= 0 then
+                    print("Teleporting (fallback overworld above ground)")
+                    RemoteEvent:FireServer("Teleport", overworldSpawn)
+                    task.wait(2)
                 end
             end
         end
     end
-end
 
-GameData.GetEventCFrame = function(eventName)
-    if not eventName or type(eventName) ~= "string" then
-        return nil
+    if mode == "Ionix" then
+        _G.Ionix_.ForceStopAll = oldForceStopAll
+    else
+        cfg.ForceStopAll = oldForceStopAll
     end
 
-    local key = eventName .. "CFrame"
+    -- Check for multi-egg center
 
-    local value = GameData[key]
-    if value and typeof(value) == "Vector3" then
-        return value
-    end
-
-    return nil
-end
-
-GameData.GetEggCategory = function(selectedEgg)
-    for _, egg in ipairs(GameData.Perm) do
-        if egg == selectedEgg then
-            return "Perm"
+    if cfg.EggSwapEnabled == true then
+        local multiCenter = IonixGameFunctions.GetMultiEggCenter(cfg)
+        if multiCenter then
+            print("[Ionix DEBUG] ⭐ Multi-egg center used")
+            local offset = Vector3.new(0, 6, 0)
+            Root.CFrame = CFrame.new(multiCenter + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+            return
         end
     end
 
-    local active = GameData.ActiveEvent
-    if typeof(active) == "string" then
-        active = { active }
+    -- Single egg placement fallback
+    local placement = GameData.GetEggPlacement(eggName)
+    if not placement then
+        warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
+        return
     end
 
-    if typeof(active) == "table" then
-        for _, eventName in ipairs(active) do
-            local list = GameData.Event[eventName]
-            if list then
-                for _, egg in ipairs(list) do
-                    if egg == selectedEgg then
-                        return eventName
+    local offset = Vector3.new(0, 6, 0)
+    Root.CFrame = CFrame.new(placement + offset) * CFrame.Angles(0, math.rad(math.random(0, 360)), 0)
+end
+
+IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
+    local GameData = IonixGameData
+    if not GameData then
+        warn("[Ionix DEBUG] ❌ GameData missing.")
+        return
+    end
+
+    local character = LocalPlayer.Character
+    local Root = character and character:FindFirstChild("HumanoidRootPart")
+    if not Root then
+        warn("[Ionix DEBUG] ❌ HumanoidRootPart missing.")
+        return
+    end
+
+    local models, data = GetRiftsFromName(RiftName)
+    if not models or not data then
+        warn("[Ionix DEBUG] ❌ Rift not found:", RiftName)
+        return
+    end
+
+    local model = nil
+    local highest = -math.huge
+
+    if data.Type == "Egg" and Multiplier then
+        for _, m in ipairs(models) do
+            local display = m:FindFirstChild("Display")
+            if display then
+                local gui = display:FindFirstChildWhichIsA("SurfaceGui", true)
+                local icon = gui and gui:FindFirstChild("Icon")
+                local luck = icon and icon:FindFirstChild("Luck")
+
+                if luck and luck:IsA("TextLabel") then
+                    local raw = tostring(luck.Text or "")
+                    local cleaned = raw:gsub("[^%d%.]", "")
+                    cleaned = cleaned:gsub("%.+", ".")
+                    local value = tonumber(cleaned) or 0
+
+                    if value >= Multiplier and value > highest then
+                        highest = value
+                        model = m
                     end
                 end
             end
         end
+
+        if not model then
+            warn(string.format(
+                "[Ionix DEBUG] ❌ No Rift matched required multiplier ≥ %s",
+                tostring(Multiplier)
+            ))
+            return
+        end
+
+    else
+        model = models[1]
     end
 
-    return nil
-end
+    if data.Type ~= "Chest" and data.Type ~= "Egg" then
+        warn("[Ionix DEBUG] ❌ Rift type not allowed:", data.Type)
+        return
+    end
 
+    if data.Type == "Egg" and Multiplier then
+        local display = model:FindFirstChild("Display")
+        if not display then
+            warn("[Ionix DEBUG] ❌ Rift.Display missing:", RiftName)
+            return
+        end
 
-for _, egg in ipairs(GameData.Perm) do
-    GameData.AreaToTeleport[egg] = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
-end
+        local surface = display:FindFirstChildWhichIsA("SurfaceGui", true)
+        if not surface then
+            warn("[Ionix DEBUG] ❌ Rift SurfaceGui missing:", RiftName)
+            return
+        end
 
-local active = GameData.ActiveEvent
-if typeof(active) == "string" then
-    active = { active }
-end
+        local icon = surface:FindFirstChild("Icon")
+        if not icon then
+            warn("[Ionix DEBUG] ❌ Rift Icon missing:", RiftName)
+            return
+        end
 
-if typeof(active) == "table" then
-    for _, eventName in ipairs(active) do
-        local list = GameData.Event[eventName]
-        if list then
-            for _, egg in ipairs(list) do
-                GameData.AreaToTeleport[egg] = "Workspace.Worlds.The Overworld.FastTravel.Spawn"
-            end
+        local luckLabel = icon:FindFirstChild("Luck")
+        if not luckLabel or not luckLabel:isA("TextLabel") then
+            warn("[Ionix DEBUG] ❌ Rift Luck label missing:", RiftName)
+            return
+        end
+
+        local luckText = luckLabel.Text:gsub("[^%d%.]", "")
+        local luckValue = tonumber(luckText) or 0
+
+        if luckValue < Multiplier then
+            warn(string.format(
+                "[Ionix DEBUG] ❌ Rift '%s' multiplier too low. Needed ≥ %s, found: %s",
+                RiftName, tostring(Multiplier), tostring(luckValue)
+            ))
+            return
         end
     end
+
+    local world = model:GetAttribute("World")
+    if not world then
+        warn("[Ionix DEBUG] ❌ Rift missing World attribute:", RiftName)
+        return
+    end
+
+    local cfg, mode = GetConfig()
+    local oldForceStopAll
+
+    if mode == "Ionix" then
+        oldForceStopAll = _G.Ionix_.ForceStopAll
+        _G.Ionix_.ForceStopAll = true
+    else
+        oldForceStopAll = cfg.ForceStopAll
+        cfg.ForceStopAll = true
+    end
+
+    task.wait(0.2)
+
+    local eggName = data.Egg
+    local area = GameData.AreaToTeleport[eggName] 
+        or "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+
+    RemoteEvent:FireServer("Teleport", area)
+
+    task.wait(0.2)
+
+    if mode == "Ionix" then
+        _G.Ionix_.ForceStopAll = oldForceStopAll
+    else
+        cfg.ForceStopAll = oldForceStopAll
+    end
+
+    local output = model:FindFirstChild("Output")
+    if not output then
+        warn("[Ionix DEBUG] ❌ OUTPUT missing in Rift:", RiftName)
+        return
+    end
+
+    Root.CFrame = output.CFrame + Vector3.new(0, 10, 0)
+
+    if Callback then
+        task.spawn(Callback)
+    end
 end
 
-return GameData
+IonixGameFunctions.BuildSecretEmbed = function(Name, Mythic, Shiny)
+	local StyleType = (Mythic and Shiny and "Shiny") or (Mythic and "Mythic") or (Shiny and "Shiny") or "Normal"
+
+    local imageKey =
+    (Shiny and Mythic and "MythicShiny") or
+    (Mythic and "Mythic") or
+    (Shiny and "Shiny") or
+    "Normal"
+
+    local Images = PetsData[Name].Images
+
+    local PetImage = GetPetImage(Images[imageKey]:match("%d+"))
+    local PetName = GetFormattedPetName(Name, Mythic, Shiny)
+    local color = GetPetColor(Mythic, Shiny)
+    local totalEggs = LocalData:Get().Stats.Hatches
+    local formattedEggs = totalEggs and FormatToHaveCommas(totalEggs) or "Unknown"
+
+    local oddsTable = GetPetOdds(Name)
+
+    local Exists = GetPetExistCount(
+        (Shiny and Mythic and ("Shiny Mythic " .. Name))
+        or (Mythic and ("Mythic " .. Name))
+        or (Shiny and ("Shiny " .. Name))
+        or Name)
+
+    local chanceText = "Unknown"
+    if oddsTable then
+        if Mythic and Shiny then
+            chanceText = oddsTable["Shiny Mythic"].odds
+        elseif Mythic then
+            chanceText = oddsTable["Mythic"].odds
+        elseif Shiny then
+            chanceText = oddsTable["Shiny"].odds
+        else
+            chanceText = oddsTable["Normal"].odds
+        end
+    end
+
+    local d = LocalData:Get()
+    local world = WorldUtil:GetPlayerWorld(LocalPlayer)
+
+    local totalLuck = StatsUtil:GetLuckMultiplier(LocalPlayer, d, world, true)
+    local totalLuckPercent = (totalLuck - 1) * 100
+
+    local secretLuck = StatsUtil:GetSecretLuck(d)
+    BuffUtil:UseBuffs(d, "Infinity", function()
+        secretLuck = secretLuck * 2
+    end)
+
+    local shinyChance = StatsUtil:GetShinyChance(d, world, true)
+    local shinyOdds = math.floor(100 / shinyChance)
+
+    local mythicChance = StatsUtil:GetMythicChance(d, world, true)
+    local mythicOdds = math.floor(100 / mythicChance)
+
+    local embed = {
+        title = "🎉 Pet Hatched!",
+        description = ("@%s just hatched a **%s**! 🐾"):format(LocalPlayer.Name, PetName),
+        color = color,
+        thumbnail = { url = PetImage },
+        fields = {
+            { name = "👤 Player", value = LocalPlayer.Name, inline = true },
+            { name = "🥚 Total Eggs", value = formattedEggs, inline = true },
+            { name = "🔢 Exist Count", value = tostring(Exists or "Unknown"), inline = true },
+            { name = "🌈 Type", value = StyleType, inline = true },
+            { name = "🎲 Odds", value = chanceText, inline = true },
+
+            { name = "🍀 Active Luck", value = FormatToHaveCommas(totalLuckPercent) .. "%", inline = true },
+            { name = "🗝️ Secret Luck", value = string.format("%.2fx", secretLuck), inline = true },
+            { name = "✨ Shiny Chance", value = " 1 / " .. shinyOdds, inline = true },
+            { name = "🔥 Mythic Chance", value = " 1 / " .. mythicOdds, inline = true },
+        },
+        footer = { text = os.date("getionix.xyz • Hatched on %d/%m/%Y at %H:%M:%S") },
+    }
+    return embed
+end
+
+IonixGameFunctions.GetHeight = function()
+    local h, alpha = GetPlayerHeight()
+    return h, alpha
+end
+
+return IonixGameFunctions
