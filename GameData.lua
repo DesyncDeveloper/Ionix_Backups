@@ -88,7 +88,10 @@ local GameData = {
     ActiveEvent = { "Christmas" },
 
     AreaToTeleport = {
-        ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn"
+        ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn",
+        ["Gingerbread Egg"] = "Christmas World",
+        ["Candycane Egg"] = "Christmas World",
+        ["Yuletide Egg"] = "Christmas World"
     },
 
     ValidShops = {
