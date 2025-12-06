@@ -463,8 +463,6 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
         cfg.ForceStopAll = oldForceStopAll
     end
 
-    -- Check for multi-egg center
-
     if cfg.EggSwapEnabled == true then
         local multiCenter = IonixGameFunctions.GetMultiEggCenter(cfg)
         if multiCenter then
@@ -475,7 +473,6 @@ IonixGameFunctions.TeleportToSelectedEgg = function()
         end
     end
 
-    -- Single egg placement fallback
     local placement = GameData.GetEggPlacement(eggName)
     if not placement then
         warn("[Ionix DEBUG] ❌ Placement not found for:", eggName)
@@ -607,6 +604,17 @@ IonixGameFunctions.TeleportToRift = function(RiftName, Multiplier, Callback)
     local eggName = data.Egg
     local area = GameData.AreaToTeleport[eggName] 
         or "Workspace.Worlds.The Overworld.FastTravel.Spawn"
+
+
+    local targetWorld = ExtractWorldFromArea(area)
+    local teleportMethod = (targetWorld == "Christmas World") and "WorldTeleport" or "Teleport"
+
+    if teleportMethod == "Teleport" then
+        RemoteEvent:FireServer("Teleport", area)
+    else
+        RemoteEvent:FireServer("WorldTeleport", area)
+    end
+
 
     RemoteEvent:FireServer("Teleport", area)
 
