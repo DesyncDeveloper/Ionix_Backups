@@ -354,18 +354,48 @@ IonixGameFunctions.GetEggPlacement = function(eggName)
 end
 
 IonixGameFunctions.GetMultiEggCenter = function(cfg)
-    if not cfg or not cfg.EggSwapEnabled or not cfg.EggList or #cfg.EggList == 0 then return nil end
+	if not cfg or not cfg.EggSwapEnabled or not cfg.EggList or #cfg.EggList == 0 then 
+		return nil
+	end
 
-    local eventName = GetCompletedEventForEggList(cfg.EggList)
-    if not eventName then return nil end
+	local hasGinger = false
+	local hasCandy = false
+	local hasYuletide = false
+	local hasNorthpole = false
+	local hasAurora = false
 
-    local center = IonixGameData.EventMultiCenter[eventName] -- corrected table name
-    if not center then
-        warn("[Ionix DEBUG] Missing EventMultiCenter for:", eventName)
-        return nil
-    end
+	for _, eggName in ipairs(cfg.EggList) do
+		if eggName == "Gingerbread Egg" then hasGinger = true end
+		if eggName == "CandyCane Egg" then hasCandy = true end
+		if eggName == "Yuletide" then hasYuletide = true end
+		if eggName == "Northpole" then hasNorthpole = true end
+		if eggName == "Aurora Egg" then hasAurora = true end
+	end
 
-    return center
+	local eventName = GetCompletedEventForEggList(cfg.EggList)
+	if not eventName then return nil end
+
+	if hasGinger and hasCandy and hasYuletide then
+		eventName = "Christmas"
+
+	elseif (hasGinger or hasCandy) and (hasYuletide or hasNorthpole or hasAurora) then
+		warn("[Ionix] Mixed Christmas groups detected, forcing base Christmas")
+		eventName = "Christmas"
+
+	elseif hasYuletide or hasNorthpole or hasAurora then
+		eventName = "Christmas2"
+
+	else
+		eventName = "Christmas"
+	end
+
+	local center = IonixGameData.EventMultiCenter[eventName]
+	if not center then
+		warn("[Ionix DEBUG] Missing EventMultiCenter for:", eventName)
+		return nil
+	end
+
+	return center
 end
 
 IonixGameFunctions.TeleportToSelectedEgg = function()
