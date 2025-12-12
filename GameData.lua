@@ -36,8 +36,8 @@ local GameData = {
         ["Candycane Egg"] = Vector3.new(-2479, 37, 1244),
         ["Yuletide Egg"] = Vector3.new(-2486, 37, 1235),
 
-        ["Northpole Egg"] = Vector3.new(-2494.2019, 37, 1228.38538),
-        ["Aurora Egg"] = Vector3.new(-2500.34473, 37, 1219.12024),
+        ["Northpole Egg"] = Vector3.new(-2494, 37, 1228),
+        ["Aurora Egg"] = Vector3.new(-2500, 37, 1219),
 
         ["Common Egg"] = Vector3.new(-83.5116577, 7.129426, 2.19293237),
         ["Spotted Egg"] = Vector3.new(-93.7220459, 7.129426, 8.14954662),
@@ -81,13 +81,14 @@ local GameData = {
             "Gingerbread Egg",
             "Candycane Egg",
             "Yuletide Egg",
-            "Northpole Egg,
+            "Northpole Egg",
             "Aurora Egg",
         },
     },
 
     EventMultiCenter = {
-        ["Christmas"] = Vector3.new(-2479, 37, 1244)
+        ["Christmas"] = Vector3.new(-2479, 37, 1244),
+        ["Christmas2"] = Vector3.new(-2494, 37, 1228)
     },
 
     ActiveEvent = { "Christmas" },
