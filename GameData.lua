@@ -36,6 +36,9 @@ local GameData = {
         ["Candycane Egg"] = Vector3.new(-2479, 37, 1244),
         ["Yuletide Egg"] = Vector3.new(-2486, 37, 1235),
 
+        ["Northpole Egg"] = Vector3.new(-2494.2019, 37, 1228.38538),
+        ["Aurora Egg"] = Vector3.new(-2500.34473, 37, 1219.12024),
+
         ["Common Egg"] = Vector3.new(-83.5116577, 7.129426, 2.19293237),
         ["Spotted Egg"] = Vector3.new(-93.7220459, 7.129426, 8.14954662),
         ["Iceshard Egg"] = Vector3.new(-117.494141, 7.12944984, 9.676651),
@@ -77,7 +80,9 @@ local GameData = {
         Christmas = {
             "Gingerbread Egg",
             "Candycane Egg",
-            "Yuletide Egg"
+            "Yuletide Egg",
+            "Northpole Egg,
+            "Aurora Egg",
         },
     },
 
@@ -91,7 +96,9 @@ local GameData = {
         ["Secret Egg"] = "Workspace.Worlds.Seven Seas.Areas.Poison Jungle.IslandTeleport.Spawn",
         ["Gingerbread Egg"] = "Christmas World",
         ["Candycane Egg"] = "Christmas World",
-        ["Yuletide Egg"] = "Christmas World"
+        ["Yuletide Egg"] = "Christmas World",
+        ["Northpole Egg"] = "Christmas World",
+        ["Aurora Egg"] = "Christmas World"
     },
 
     ValidShops = {
@@ -109,6 +116,8 @@ local GameData = {
         "Gingerbread Egg",
         "Candycane Egg",
         "Yuletide Egg",
+        "Northpole Egg",
+        "Aurora Egg",
 
         "Super Aura Egg",
         "Rumblecon Egg",
@@ -178,13 +187,11 @@ GameData.GetEggPlacement = function(eggName)
         return nil
     end
 
-    -- 1) DIRECT PLACEMENT ALWAYS WINS
     local storedPlacement = GameData.EggPlacement[eggName]
     if typeof(storedPlacement) == "Vector3" then
         return storedPlacement
     end
 
-    -- 2) LIVE MODEL IN WORKSPACE
     local primary, model = GameData.GetEggInstance(eggName)
     if primary and primary:IsA("BasePart") then
         return primary.Position
@@ -192,12 +199,10 @@ GameData.GetEggPlacement = function(eggName)
         warn("[Ionix DEBUG] ⚠️ EggInstance found but no valid PrimaryPart for egg:", eggName)
     end
 
-    -- 3) EVENT FALLBACK (disabled for Christmas)
     local category = GameData.GetEggCategory(eggName)
 
-    -- BLOCK Christmas fallback so it NEVER uses ChristmasCFrame
     if category == "Christmas" then
-        return nil  -- STOP immediately
+        return nil
     end
 
     if category then
