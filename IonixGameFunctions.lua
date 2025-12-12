@@ -2,7 +2,7 @@ repeat
     task.wait(0.1)
 until game:IsLoaded() and game:GetService("Players") and game:GetService("Players").LocalPlayer
 
-if false == true then
+if true == true then
     loadstringUrl = "https://getionix.xyz/scripts/GameData"
 else
     loadstringUrl = "https://raw.githubusercontent.com/DesyncDeveloper/Ionix_Backups/refs/heads/main/GameData.lua"
